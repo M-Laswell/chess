@@ -47,6 +47,11 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+
+        //pieceMoves: This method is similar to ChessGame.validMoves, except it does not honor whose turn it is or check if the king is being attacked.
+        // This method does account for enemy and friendly pieces blocking movement paths.
+        // The pieceMoves method will need to take into account the type of piece, and the location of other pieces on the board.
         throw new RuntimeException("Not implemented");
+
     }
 }
