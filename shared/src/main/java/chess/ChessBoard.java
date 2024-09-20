@@ -12,7 +12,7 @@ public class ChessBoard {
     ChessPiece[][] chessBoard;
 
     public ChessBoard() {
-        chessBoard = new ChessPiece[8][8];
+        chessBoard = new ChessPiece[10][10];
 
 
     }
