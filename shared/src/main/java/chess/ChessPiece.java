@@ -141,9 +141,76 @@ public class ChessPiece {
         return moves;
     }
 
+
     private Collection<ChessMove> BishopMove(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new HashSet<ChessMove>();
+        ChessPosition bishopPosition = myPosition;
         ChessGame.TeamColor myColor = board.chessBoard[myPosition.getRow()][myPosition.getColumn()].pieceColor;
+
+        //upright
+        while (bishopPosition.getRow()+1 <= 8 && bishopPosition.getColumn()+1 <= 8){
+            if(board.chessBoard[bishopPosition.getRow()+1][bishopPosition.getColumn()+1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(bishopPosition.getRow()+1, bishopPosition.getColumn()+1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1));
+            }else if (board.chessBoard[bishopPosition.getRow()+1][bishopPosition.getColumn()+1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(bishopPosition.getRow()+1, bishopPosition.getColumn()+1),null));
+                break;
+            } else if (board.chessBoard[bishopPosition.getRow()+1][bishopPosition.getColumn()+1].pieceColor == myColor) {
+                break;
+
+            }
+            bishopPosition = new ChessPosition(bishopPosition.getRow()+1, bishopPosition.getColumn()+1);
+
+        }
+        bishopPosition = myPosition;
+        //upleft
+        while (bishopPosition.getRow()+1 <= 8 && bishopPosition.getColumn()-1 >= 1){
+            if(board.chessBoard[bishopPosition.getRow()+1][bishopPosition.getColumn()-1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(bishopPosition.getRow()+1, bishopPosition.getColumn()-1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1));
+            }else if (board.chessBoard[bishopPosition.getRow()+1][bishopPosition.getColumn()-1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(bishopPosition.getRow()+1, bishopPosition.getColumn()-1),null));
+                break;
+            } else if (board.chessBoard[bishopPosition.getRow()+1][bishopPosition.getColumn()-1].pieceColor == myColor) {
+                break;
+            }
+            bishopPosition = new ChessPosition(bishopPosition.getRow()+1, bishopPosition.getColumn()-1);
+
+        }
+        bishopPosition = myPosition;
+
+        //downright
+        while (bishopPosition.getRow()-1 >= 1 && bishopPosition.getColumn()+1 <= 8){
+            if(board.chessBoard[bishopPosition.getRow()-1][bishopPosition.getColumn()+1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(bishopPosition.getRow()-1, bishopPosition.getColumn()+1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1));
+            }else if (board.chessBoard[bishopPosition.getRow()-1][bishopPosition.getColumn()+1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(bishopPosition.getRow()-1, bishopPosition.getColumn()+1),null));
+                break;
+            } else if (board.chessBoard[bishopPosition.getRow()-1][bishopPosition.getColumn()+1].pieceColor == myColor) {
+                break;
+            }
+
+            bishopPosition = new ChessPosition(bishopPosition.getRow()-1, bishopPosition.getColumn()+1);
+
+        }
+        bishopPosition = myPosition;
+
+        //downleft
+        while (bishopPosition.getRow()-1 >= 1 && bishopPosition.getColumn()-1 >= 1){
+            if(board.chessBoard[bishopPosition.getRow()-1][bishopPosition.getColumn()-1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(bishopPosition.getRow()-1, bishopPosition.getColumn()-1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1));
+            }else if (board.chessBoard[bishopPosition.getRow()-1][bishopPosition.getColumn()-1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(bishopPosition.getRow()-1, bishopPosition.getColumn()-1),null));
+                break;
+            } else if (board.chessBoard[bishopPosition.getRow()-1][bishopPosition.getColumn()-1].pieceColor == myColor) {
+                break;
+            }
+
+            bishopPosition = new ChessPosition(bishopPosition.getRow()-1, bishopPosition.getColumn()-1);
+
+        }
 
         return moves;
     }
