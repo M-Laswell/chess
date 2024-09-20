@@ -291,6 +291,138 @@ public class ChessPiece {
     private Collection<ChessMove> QueenMove(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new HashSet<ChessMove>();
         ChessGame.TeamColor myColor = board.chessBoard[myPosition.getRow()][myPosition.getColumn()].pieceColor;
+        ChessPosition queenPosition = myPosition;
+
+        //up
+        while (queenPosition.getRow()+1 <= 8){
+            if(board.chessBoard[queenPosition.getRow()+1][queenPosition.getColumn()] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()+1, queenPosition.getColumn()),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1));
+            }else if (board.chessBoard[queenPosition.getRow()+1][queenPosition.getColumn()].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()+1, queenPosition.getColumn()),null));
+                break;
+            } else if (board.chessBoard[queenPosition.getRow()+1][queenPosition.getColumn()].pieceColor == myColor) {
+                break;
+
+            }
+            queenPosition = new ChessPosition(queenPosition.getRow()+1, queenPosition.getColumn());
+
+        }
+        queenPosition = myPosition;
+        //right
+        while (queenPosition.getColumn()+ 1 <= 8){
+            if(board.chessBoard[queenPosition.getRow()][queenPosition.getColumn()+1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow(), queenPosition.getColumn()+1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1));
+            }else if (board.chessBoard[queenPosition.getRow()][queenPosition.getColumn()+1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow(), queenPosition.getColumn()+1),null));
+                break;
+            } else if (board.chessBoard[queenPosition.getRow()][queenPosition.getColumn()+1].pieceColor == myColor) {
+                break;
+            }
+            queenPosition = new ChessPosition(queenPosition.getRow(), queenPosition.getColumn()+1);
+
+        }
+        queenPosition = myPosition;
+
+        //left
+        while (queenPosition.getColumn()-1 >= 1){
+            if(board.chessBoard[queenPosition.getRow()][queenPosition.getColumn()-1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow(), queenPosition.getColumn()-1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1));
+            }else if (board.chessBoard[queenPosition.getRow()][queenPosition.getColumn()-1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow(), queenPosition.getColumn()-1),null));
+                break;
+            } else if (board.chessBoard[queenPosition.getRow()][queenPosition.getColumn()-1].pieceColor == myColor) {
+                break;
+            }
+
+            queenPosition = new ChessPosition(queenPosition.getRow(), queenPosition.getColumn()-1);
+
+        }
+        queenPosition = myPosition;
+
+        //down
+        while (queenPosition.getRow()-1 >= 1){
+            if(board.chessBoard[queenPosition.getRow()-1][queenPosition.getColumn()] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()-1, queenPosition.getColumn()),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1));
+            }else if (board.chessBoard[queenPosition.getRow()-1][queenPosition.getColumn()].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()-1, queenPosition.getColumn()),null));
+                break;
+            } else if (board.chessBoard[queenPosition.getRow()-1][queenPosition.getColumn()].pieceColor == myColor) {
+                break;
+            }
+
+            queenPosition = new ChessPosition(queenPosition.getRow()-1, queenPosition.getColumn());
+
+        }
+        queenPosition = myPosition;
+
+        //upright
+        while (queenPosition.getRow()+1 <= 8 && queenPosition.getColumn()+1 <= 8){
+            if(board.chessBoard[queenPosition.getRow()+1][queenPosition.getColumn()+1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()+1, queenPosition.getColumn()+1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1));
+            }else if (board.chessBoard[queenPosition.getRow()+1][queenPosition.getColumn()+1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()+1, queenPosition.getColumn()+1),null));
+                break;
+            } else if (board.chessBoard[queenPosition.getRow()+1][queenPosition.getColumn()+1].pieceColor == myColor) {
+                break;
+
+            }
+            queenPosition = new ChessPosition(queenPosition.getRow()+1, queenPosition.getColumn()+1);
+
+        }
+        queenPosition = myPosition;
+        //upleft
+        while (queenPosition.getRow()+1 <= 8 && queenPosition.getColumn()-1 >= 1){
+            if(board.chessBoard[queenPosition.getRow()+1][queenPosition.getColumn()-1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()+1, queenPosition.getColumn()-1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1));
+            }else if (board.chessBoard[queenPosition.getRow()+1][queenPosition.getColumn()-1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()+1, queenPosition.getColumn()-1),null));
+                break;
+            } else if (board.chessBoard[queenPosition.getRow()+1][queenPosition.getColumn()-1].pieceColor == myColor) {
+                break;
+            }
+            queenPosition = new ChessPosition(queenPosition.getRow()+1, queenPosition.getColumn()-1);
+
+        }
+        queenPosition = myPosition;
+
+        //downright
+        while (queenPosition.getRow()-1 >= 1 && queenPosition.getColumn()+1 <= 8){
+            if(board.chessBoard[queenPosition.getRow()-1][queenPosition.getColumn()+1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()-1, queenPosition.getColumn()+1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1));
+            }else if (board.chessBoard[queenPosition.getRow()-1][queenPosition.getColumn()+1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()-1, queenPosition.getColumn()+1),null));
+                break;
+            } else if (board.chessBoard[queenPosition.getRow()-1][queenPosition.getColumn()+1].pieceColor == myColor) {
+                break;
+            }
+
+            queenPosition = new ChessPosition(queenPosition.getRow()-1, queenPosition.getColumn()+1);
+
+        }
+        queenPosition = myPosition;
+
+        //downleft
+        while (queenPosition.getRow()-1 >= 1 && queenPosition.getColumn()-1 >= 1){
+            if(board.chessBoard[queenPosition.getRow()-1][queenPosition.getColumn()-1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()-1, queenPosition.getColumn()-1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1));
+            }else if (board.chessBoard[queenPosition.getRow()-1][queenPosition.getColumn()-1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(queenPosition.getRow()-1, queenPosition.getColumn()-1),null));
+                break;
+            } else if (board.chessBoard[queenPosition.getRow()-1][queenPosition.getColumn()-1].pieceColor == myColor) {
+                break;
+            }
+
+            queenPosition = new ChessPosition(queenPosition.getRow()-1, queenPosition.getColumn()-1);
+
+        }
 
         return moves;
     }
