@@ -218,6 +218,72 @@ public class ChessPiece {
     private Collection<ChessMove> RookMove(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new HashSet<ChessMove>();
         ChessGame.TeamColor myColor = board.chessBoard[myPosition.getRow()][myPosition.getColumn()].pieceColor;
+        ChessPosition rookPosition = myPosition;
+
+        //up
+        while (rookPosition.getRow()+1 <= 8){
+            if(board.chessBoard[rookPosition.getRow()+1][rookPosition.getColumn()] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(rookPosition.getRow()+1, rookPosition.getColumn()),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()+1));
+            }else if (board.chessBoard[rookPosition.getRow()+1][rookPosition.getColumn()].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(rookPosition.getRow()+1, rookPosition.getColumn()),null));
+                break;
+            } else if (board.chessBoard[rookPosition.getRow()+1][rookPosition.getColumn()].pieceColor == myColor) {
+                break;
+
+            }
+            rookPosition = new ChessPosition(rookPosition.getRow()+1, rookPosition.getColumn());
+
+        }
+        rookPosition = myPosition;
+        //right
+        while (rookPosition.getColumn()+ 1 <= 8){
+            if(board.chessBoard[rookPosition.getRow()][rookPosition.getColumn()+1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(rookPosition.getRow(), rookPosition.getColumn()+1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()+1, myPosition.getColumn()-1));
+            }else if (board.chessBoard[rookPosition.getRow()][rookPosition.getColumn()+1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(rookPosition.getRow(), rookPosition.getColumn()+1),null));
+                break;
+            } else if (board.chessBoard[rookPosition.getRow()][rookPosition.getColumn()+1].pieceColor == myColor) {
+                break;
+            }
+            rookPosition = new ChessPosition(rookPosition.getRow(), rookPosition.getColumn()+1);
+
+        }
+        rookPosition = myPosition;
+
+        //left
+        while (rookPosition.getColumn()-1 >= 1){
+            if(board.chessBoard[rookPosition.getRow()][rookPosition.getColumn()-1] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(rookPosition.getRow(), rookPosition.getColumn()-1),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()+1));
+            }else if (board.chessBoard[rookPosition.getRow()][rookPosition.getColumn()-1].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(rookPosition.getRow(), rookPosition.getColumn()-1),null));
+                break;
+            } else if (board.chessBoard[rookPosition.getRow()][rookPosition.getColumn()-1].pieceColor == myColor) {
+                break;
+            }
+
+            rookPosition = new ChessPosition(rookPosition.getRow(), rookPosition.getColumn()-1);
+
+        }
+        rookPosition = myPosition;
+
+        //down
+        while (rookPosition.getRow()-1 >= 1){
+            if(board.chessBoard[rookPosition.getRow()-1][rookPosition.getColumn()] == null){
+                moves.add(new ChessMove(myPosition, new ChessPosition(rookPosition.getRow()-1, rookPosition.getColumn()),null));
+                //BishopMove(board, new ChessPosition(myPosition.getRow()-1, myPosition.getColumn()-1));
+            }else if (board.chessBoard[rookPosition.getRow()-1][rookPosition.getColumn()].pieceColor != myColor){
+                moves.add(new ChessMove(myPosition, new ChessPosition(rookPosition.getRow()-1, rookPosition.getColumn()),null));
+                break;
+            } else if (board.chessBoard[rookPosition.getRow()-1][rookPosition.getColumn()].pieceColor == myColor) {
+                break;
+            }
+
+            rookPosition = new ChessPosition(rookPosition.getRow()-1, rookPosition.getColumn());
+
+        }
 
         return moves;
     }
