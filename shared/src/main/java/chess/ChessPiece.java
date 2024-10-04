@@ -64,22 +64,15 @@ public class ChessPiece {
         // This method does account for enemy and friendly pieces blocking movement paths.
         // The pieceMoves method will need to take into account the type of piece, and the location of other pieces on the board.
 
-        switch(type){
-            case PieceType.KING:
-                return this.KingMove(board,myPosition);
-            case PieceType.QUEEN:
-                return this.QueenMove(board,myPosition);
-            case PieceType.BISHOP:
-                return this.BishopMove(board,myPosition);
-            case PieceType.KNIGHT:
-                return this.KnightMove(board,myPosition);
-            case PieceType.ROOK:
-                return this.RookMove(board,myPosition);
-            case PieceType.PAWN:
-                return this.PawnMove(board,myPosition);
-            default:
-                throw new RuntimeException("What the flip? ;)" );
-        }
+        return switch (type) {
+            case PieceType.KING -> this.KingMove(board, myPosition);
+            case PieceType.QUEEN -> this.QueenMove(board, myPosition);
+            case PieceType.BISHOP -> this.BishopMove(board, myPosition);
+            case PieceType.KNIGHT -> this.KnightMove(board, myPosition);
+            case PieceType.ROOK -> this.RookMove(board, myPosition);
+            case PieceType.PAWN -> this.PawnMove(board, myPosition);
+            default -> throw new RuntimeException("What the flip? ;)");
+        };
 
         //throw new RuntimeException("yah this is just out of bounds m8");
 
