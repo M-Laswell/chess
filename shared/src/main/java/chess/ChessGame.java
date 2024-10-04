@@ -10,9 +10,11 @@ import java.util.Collection;
  */
 public class ChessGame {
     TeamColor teamTurn;
+    ChessBoard chessBoard;
 
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
+        //this.chessBoard = getBoard();
 
     }
 
@@ -98,7 +100,8 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+
+        this.chessBoard = board;
     }
 
     /**
@@ -107,6 +110,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return chessBoard;
     }
 }
