@@ -34,6 +34,12 @@ public class ChessBoard {
 
     }
 
+    public void movePiece(ChessPosition startPosition,ChessPosition endPosition){
+        ChessPiece thePiece = getPiece(startPosition);
+        removePiece(startPosition);
+        addPiece(endPosition, thePiece);
+    }
+
     /**
      * Gets a chess piece on the chessboard
      *
