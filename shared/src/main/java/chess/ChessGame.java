@@ -149,11 +149,28 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        boolean inCheckmate = false;
+        ChessPosition piecePos = new ChessPosition(0,0);
+        Collection<ChessMove> possibleMoves = new HashSet<>();
+
+        for(int row = 0; row < this.getBoard().chessBoard.length ;row++){
+            for(int col = 0; col < this.getBoard().chessBoard.length ;col++) {
+                ChessPiece piece = this.getBoard().chessBoard[row][col];
+                if (piece != null && piece.pieceColor == teamColor) {
+                    piecePos = new ChessPosition(row, col);
+                    possibleMoves.addAll(validMoves(piecePos));
+
+
+                }
+            }
+
+        }
+        if (possibleMoves.size() == 0){
+            return true;
+        }
 
 
 
-        return inCheckmate;
+        return false;
     }
 
     /**
