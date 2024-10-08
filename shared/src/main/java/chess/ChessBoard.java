@@ -17,6 +17,9 @@ public class ChessBoard {
 
     }
 
+    public ChessBoard(ChessBoard oldBoard) {
+        chessBoard = oldBoard.chessBoard;
+    }
     /**
      * Adds a chess piece to the chessboard
      *
@@ -54,6 +57,7 @@ public class ChessBoard {
 
         return chessBoard[position.getRow()][position.getColumn()];
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -109,4 +113,6 @@ public class ChessBoard {
         chessBoard[1][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
         chessBoard[1][8] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
     }
+
+
 }

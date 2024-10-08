@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -54,6 +55,25 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
 
+        ChessPiece currPiece = chessBoard.getPiece(startPosition);
+        if (currPiece == null){
+            return null;
+        }
+        Collection<ChessMove> possibleMoves = currPiece.pieceMoves(chessBoard, startPosition);
+        Collection<ChessMove> validMoves = new HashSet<>();
+
+
+        for (ChessMove move : possibleMoves) {
+            ChessBoard tempBoard = new ChessBoard(chessBoard);
+            chessBoard.movePiece(startPosition, move.getEndPosition());
+            if (!isInCheck(currPiece.pieceColor)){
+                validMoves.add(move);
+            }
+
+            chessBoard = tempBoard;
+        }
+
+        return validMoves;
 
 
     }
@@ -82,10 +102,14 @@ public class ChessGame {
      * @param teamColor which team to check for check
      * @return True if the specified team is in check
      */
+    //try using.contains on the collection of moves after finding the king
     public boolean isInCheck(TeamColor teamColor) {
+        boolean inCheck = false;
 
-        throw new RuntimeException("Not implemented");
 
+
+
+        return inCheck;
     }
 
     /**
@@ -95,9 +119,11 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        boolean inCheckmate = false;
 
-        throw new RuntimeException("Not implemented");
 
+
+        return inCheckmate;
     }
 
     /**
@@ -108,9 +134,9 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        boolean inStalemate = false;
 
-        throw new RuntimeException("Not implemented");
-
+        return inStalemate;
     }
 
     /**
