@@ -46,10 +46,17 @@ public class ChessBoard {
 
     }
 
-    public void movePiece(ChessPosition startPosition,ChessPosition endPosition){
+    public void movePiece(ChessPosition startPosition,ChessPosition endPosition, ChessPiece.PieceType promotionPiece){
         ChessPiece thePiece = getPiece(startPosition);
         removePiece(startPosition);
-        addPiece(endPosition, thePiece);
+        if ( promotionPiece != null ){
+            thePiece.type = promotionPiece;
+            addPiece(endPosition, thePiece);
+        }
+        else
+        {
+            addPiece(endPosition, thePiece);
+        }
     }
 
     /**
