@@ -104,12 +104,41 @@ public class ChessGame {
      */
     //try using.contains on the collection of moves after finding the king
     public boolean isInCheck(TeamColor teamColor) {
-        boolean inCheck = false;
+
+        ChessPosition kingPos = new ChessPosition(0,0);
+        Collection<ChessMove> possibleMoves = new HashSet<>();
+
+        for(int row = 0; row < this.getBoard().chessBoard.length ;row++){
+            for(int col = 0; col < this.getBoard().chessBoard.length ;col++) {
+                ChessPiece piece = this.getBoard().chessBoard[row][col];
+                if (piece != null && piece.getPieceType() == ChessPiece.PieceType.KING && piece.pieceColor == teamColor) {
+                    kingPos = new ChessPosition(row, col);
+                }
+            }
+
+        }
+
+        for(int row = 0; row < this.getBoard().chessBoard.length ;row++){
+            for(int col = 0; col < this.getBoard().chessBoard.length ;col++) {
+                ChessPiece piece = this.getBoard().chessBoard[row][col];
+                ChessPosition position = new ChessPosition(row, col);
+                if(piece != null && piece.pieceColor != teamColor){
+                    possibleMoves.addAll(piece.pieceMoves(this.getBoard(), position));
+
+                }
+            }
+
+        }
+        for (ChessMove move : possibleMoves) {
+            if (move.endPosition.getRow() == kingPos.getRow() && move.endPosition.getColumn()  == kingPos.getColumn()) {
+                return true;
+            }
+        }
 
 
 
 
-        return inCheck;
+        return false;
     }
 
     /**
