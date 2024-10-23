@@ -1,5 +1,6 @@
 package handler;
 
+import dataaccess.DataAccessException;
 import model.GameData;
 import model.UserData;
 import spark.Request;
@@ -18,7 +19,12 @@ public class CreateGameHandler implements Route {
         response.type("application/json");
         String authorization = request.headers("authorization");
         var gameName = new Gson().fromJson(request.body(), GameData.class);
-        int gameId = gameService.createGame(gameName, authorization);
-        return new Gson().toJson(Map.of("gameID", gameId));
+        try {
+            int gameId = gameService.createGame(gameName, authorization);
+            return new Gson().toJson(Map.of("gameID", gameId));
+        } catch (DataAccessException e) {
+            System.out.println(e);
+            return null;
+        }
     }
 }

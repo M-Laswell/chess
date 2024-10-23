@@ -23,10 +23,13 @@ public class UserService {
 
     public AuthData login(UserData user) throws DataAccessException {
         //Check if user exists
+        if(userDAO.getUser(user.getUsername()) == null){
+            throw new DataAccessException("Error: unauthorized");
+        }
         if(userDAO.getUser(user.getUsername()).getPassword().equals(user.getPassword())) {
             return authService.createAuth(user.getUsername());
         }
-        return null;
+        throw new DataAccessException("Error: unauthorized");
     }
 
     public void logout(String token) throws DataAccessException {

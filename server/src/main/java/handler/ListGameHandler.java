@@ -1,6 +1,7 @@
 package handler;
 
 import com.google.gson.GsonBuilder;
+import dataaccess.DataAccessException;
 import model.GameData;
 import service.GameService;
 import spark.Request;
@@ -16,8 +17,13 @@ public class ListGameHandler implements Route {
     public Object handle(Request request, Response response) throws Exception {
         response.type("application/json");
         String authorization = request.headers("authorization");
-        gameService.getGames(authorization);
-        var games = gameService.getGames(authorization);
-        return new GsonBuilder().serializeNulls().create().toJson(Map.of("games", games));
+        try {
+            gameService.getGames(authorization);
+            var games = gameService.getGames(authorization);
+            return new GsonBuilder().serializeNulls().create().toJson(Map.of("games", games));
+        } catch (DataAccessException e) {
+            System.out.println(e);
+        }
+        return null;
     }
 }

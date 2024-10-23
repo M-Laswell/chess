@@ -2,6 +2,7 @@ package handler;
 
 import chess.ChessGame;
 import com.google.gson.JsonObject;
+import dataaccess.DataAccessException;
 import model.GameData;
 import service.GameService;
 import spark.Request;
@@ -16,7 +17,14 @@ public class JoinGameHandler implements Route {
         response.type("application/json");
         String authorization = request.headers("authorization");
         JsonObject bodyJson = new Gson().fromJson(request.body(), JsonObject.class);
-        gameService.joinGame(authorization, ChessGame.TeamColor.valueOf(bodyJson.get("playerColor").getAsString()), Integer.parseInt(String.valueOf(bodyJson.get("gameID"))));
-        return "";
+        try {
+            gameService.joinGame(authorization, ChessGame.TeamColor.valueOf(bodyJson.get("playerColor").getAsString()), Integer.parseInt(String.valueOf(bodyJson.get("gameID"))));
+            return "";
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalArgumentException e) {
+            System.out.println(e);
+            return null;
+        }
     }
 }

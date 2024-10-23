@@ -13,10 +13,15 @@ public class ClearApplicationHandler implements Route {
         AuthDAO auth = MemoryAuthDAO.getInstance();
         UserDAO user = MemoryUserDAO.getInstance();
 
-        game.clear();
-        auth.clear();
-        user.clear();
+        try {
+            game.clear();
+            auth.clear();
+            user.clear();
 
-        return "";
+            return "";
+        } catch (DataAccessException e) {
+            System.out.println(e);
+            return null;
+        }
     }
 }

@@ -1,5 +1,6 @@
 package handler;
 
+import dataaccess.DataAccessException;
 import service.UserService;
 import spark.Request;
 import spark.Response;
@@ -12,7 +13,11 @@ public class LogoutHandler implements Route {
     public Object handle(Request request, Response response) throws Exception {
         response.type("application/json");
         String authorization = request.headers("authorization");
-        userService.logout(authorization);
+        try {
+            userService.logout(authorization);
+        } catch (DataAccessException e) {
+            System.out.println(e);
+        }
         return "";
     }
 }
