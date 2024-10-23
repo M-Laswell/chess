@@ -8,9 +8,9 @@ import spark.Route;
 public class ClearApplicationHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
-        GameDAO game = new MemoryGameDAO();
-        AuthDAO auth = new MemoryAuthDAO();
-        UserDAO user = new MemoryUserDAO();
+        GameDAO game = MemoryGameDAO.getInstance();
+        AuthDAO auth = MemoryAuthDAO.getInstance();
+        UserDAO user = MemoryUserDAO.getInstance();
 
         game.clear();
         auth.clear();

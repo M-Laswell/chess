@@ -14,14 +14,19 @@ public class UserService {
     public AuthData register(UserData user) throws DataAccessException {
         //Check if User already exists
         //Create Auth Token
-        var auth = authService.createAuth(user.getUsername());
-        return auth;
+        if(userDAO.getUser(user.getUsername()) == null) {
+            userDAO.createUser(user);
+            return authService.createAuth(user.getUsername());
+        }
+        return null;
     }
 
-    public AuthData login(UserData user) {
-        AuthData auth = new AuthData("123",user.getUsername());
-
-        return auth;
+    public AuthData login(UserData user) throws DataAccessException {
+        //Check if user exists
+        if(userDAO.getUser(user.getUsername()).getPassword().equals(user.getPassword())) {
+            return authService.createAuth(user.getUsername());
+        }
+        return null;
     }
 
     public void logout(AuthData auth) {
