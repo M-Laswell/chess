@@ -7,7 +7,7 @@ import model.AuthData;
 import java.util.UUID;
 
 public class AuthService {
-    AuthDAO authDAO = new MemoryAuthDAO();
+    AuthDAO authDAO = MemoryAuthDAO.getInstance();
 
     public AuthData authenticate(String token) throws DataAccessException {
         return authDAO.getAuth(token);

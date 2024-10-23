@@ -9,8 +9,17 @@ import java.util.HashMap;
 import java.util.List;
 
 public class MemoryGameDAO implements GameDAO{
+    private static MemoryGameDAO instance;
     private int nextID = 1;
     private final HashMap<Integer, GameData> games = new HashMap<>();
+
+    public static MemoryGameDAO getInstance(){
+        if (instance == null) {
+            instance = new MemoryGameDAO();
+        }
+        return instance;
+    }
+
 
     @Override
     public GameData createGame(GameData game) throws DataAccessException {

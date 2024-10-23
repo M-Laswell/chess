@@ -7,8 +7,10 @@ import dataaccess.MemoryGameDAO;
 import model.GameData;
 import service.AuthService;
 
+import java.util.Collection;
+
 public class GameService {
-    GameDAO gameDAO = new MemoryGameDAO();
+    GameDAO gameDAO = MemoryGameDAO.getInstance();
     AuthService authService = new AuthService();
 
     public int createGame(GameData game, String token) throws DataAccessException {
@@ -17,5 +19,10 @@ public class GameService {
         game.setWhiteUsername(username);
         game.setGame(newGame);
         return gameDAO.createGame(game).getGameID();
+    }
+
+    public Collection<GameData> getGames(String token) throws DataAccessException {
+        //Authenticate User
+        return gameDAO.listGames();
     }
 }

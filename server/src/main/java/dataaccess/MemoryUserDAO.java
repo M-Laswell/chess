@@ -6,7 +6,15 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class MemoryUserDAO implements UserDAO {
+    private static MemoryUserDAO instance;
     Collection<UserData> users = new HashSet<UserData>();
+
+    public static MemoryUserDAO getInstance(){
+        if (instance == null) {
+            instance = new MemoryUserDAO();
+        }
+        return instance;
+    }
 
     @Override
     public UserData createUser(UserData user) throws DataAccessException {
