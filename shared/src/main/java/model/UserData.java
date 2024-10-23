@@ -6,6 +6,7 @@ import java.util.Objects;
  username	String
  password	String
  email	String */
+
 public class UserData {
     private final String username;
     private final String password;
