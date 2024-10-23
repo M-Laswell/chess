@@ -45,7 +45,10 @@ public class UserService {
     }
 
     public void logout(String token) throws DataAccessException {
-        authService.authenticate(token);
+        AuthData user = authService.authenticate(token);
+        if(user == null){
+            throw new DataAccessException("Error: unauthorized");
+        }
         authService.deleteAuth(token);
     }
 }
