@@ -29,7 +29,8 @@ public class UserService {
         return null;
     }
 
-    public void logout(AuthData auth) {
-
+    public void logout(String token) throws DataAccessException {
+        authService.authenticate(token);
+        authService.deleteAuth(token);
     }
 }

@@ -17,4 +17,8 @@ public class AuthService {
         AuthData token = new AuthData(UUID.randomUUID().toString(), username);
         return authDAO.createAuth(token);
     }
+
+    public void deleteAuth(String token) throws DataAccessException {
+        authDAO.deleteAuth(token);
+    }
 }

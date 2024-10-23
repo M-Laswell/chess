@@ -17,7 +17,6 @@ public class ListGameHandler implements Route {
         String authorization = request.headers("authorization");
         gameService.getGames(authorization);
         var games = gameService.getGames(authorization);
-        System.out.println(games);
         return new GsonBuilder().serializeNulls().create().toJson(games);
     }
 }

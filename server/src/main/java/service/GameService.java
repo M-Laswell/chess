@@ -14,7 +14,10 @@ public class GameService {
     AuthService authService = new AuthService();
 
     public int createGame(GameData game, String token) throws DataAccessException {
-        String username = authService.authenticate(token).getUsername();
+        AuthData user = authService.authenticate(token);
+        if(user == null){
+            throw new DataAccessException("Authentication Failure");
+        }
         ChessGame newGame = new ChessGame();
         game.setGame(newGame);
         return gameDAO.createGame(game).getGameID();
@@ -22,13 +25,19 @@ public class GameService {
 
     public Collection<GameData> getGames(String token) throws DataAccessException {
         //Authenticate User
+        AuthData user = authService.authenticate(token);
+        if(user == null){
+            throw new DataAccessException("Authentication Failure");
+        }
         return gameDAO.listGames();
     }
 
     public void joinGame(String token, String color, int gameID) throws DataAccessException {
         AuthData user = authService.authenticate(token);
+        if(user == null){
+            throw new DataAccessException("Authentication Failure");
+        }
         GameData game = gameDAO.getGame(gameID);
-        System.out.println(color);
         if(color.equals("\"BLACK\"")){
             game.setBlackUsername(user.getUsername());
         } else if(color.equals("\"WHITE\"")){

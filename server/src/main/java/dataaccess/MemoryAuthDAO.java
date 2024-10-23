@@ -26,7 +26,6 @@ public class MemoryAuthDAO implements AuthDAO{
 
     @Override
     public AuthData getAuth(String uuid) throws DataAccessException {
-        System.out.println(tokensList);
         for (AuthData token : tokensList){
             if (token.getAuthToken().equals(uuid)) {
                 return token;
