@@ -13,11 +13,11 @@ gameName	String
 game	ChessGame
         */
 public class GameData {
-    private final int gameID;
-    private final String whiteUsername;
-    private final String blackUsername;
-    private final String gameName;
-    private final ChessGame game;
+    private int gameID;
+    private String whiteUsername;
+    private String blackUsername;
+    private String gameName;
+    private ChessGame game;
 
     public GameData(int gameID, String whiteUsername, String blackUsername, String gameName, ChessGame game){
         this.gameID = gameID;
@@ -45,6 +45,26 @@ public class GameData {
 
     public ChessGame getGame() {
         return game;
+    }
+
+    public void setWhiteUsername(String username){
+        this.whiteUsername = username;
+    }
+
+    public void setGameID(int gameID) {
+        this.gameID = gameID;
+    }
+
+    public void setBlackUsername(String blackUsername) {
+        this.blackUsername = blackUsername;
+    }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
+    }
+
+    public void setGame(ChessGame game) {
+        this.game = game;
     }
 
     @Override

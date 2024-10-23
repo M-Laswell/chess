@@ -1,12 +1,17 @@
 package service;
 
+import dataaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
+import service.AuthService;
 
 public class UserService {
-    public AuthData register(UserData user) {
-        AuthData auth = new AuthData("123", user.getUsername());
+    AuthService authService = new AuthService();
 
+    public AuthData register(UserData user) throws DataAccessException {
+        //Check if User already exists
+        //Create Auth Token
+        var auth = authService.createAuth(user.getUsername());
         return auth;
     }
 
