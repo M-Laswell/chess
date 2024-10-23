@@ -14,11 +14,23 @@ public class UserService {
     public AuthData register(UserData user) throws DataAccessException {
         //Check if User already exists
         //Create Auth Token
+        if(user.getPassword() == null) {
+            throw new DataAccessException("Error: bad request");
+        }
+        if(user.getUsername() == null) {
+            throw new DataAccessException("Error: bad request");
+        }
+        if(user.getEmail() == null) {
+            throw new DataAccessException("Error: bad request");
+        }
+
+
+
         if(userDAO.getUser(user.getUsername()) == null) {
             userDAO.createUser(user);
             return authService.createAuth(user.getUsername());
         }
-        return null;
+        throw new DataAccessException("Error: already taken");
     }
 
     public AuthData login(UserData user) throws DataAccessException {
