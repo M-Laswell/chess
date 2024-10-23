@@ -14,17 +14,24 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     @Override
-    public AuthData getAuth(String token) throws DataAccessException {
-        return new AuthData(token, "JohnDoe");
+    public AuthData getAuth(String uuid) throws DataAccessException {
+        for (AuthData token : tokensList){
+            if (token.getAuthToken().equals(uuid)) {
+                return token;
+            }
+        }
+        return null;
     }
 
     @Override
-    public void deleteAuth(String token) throws DataAccessException {
+    public void deleteAuth(String uuid) throws DataAccessException {
+        tokensList.removeIf(token -> token.getAuthToken().equals(uuid));
 
     }
 
     @Override
     public void clear() throws DataAccessException {
+        tokensList.clear();
 
     }
 }
