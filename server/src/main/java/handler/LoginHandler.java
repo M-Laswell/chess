@@ -12,6 +12,7 @@ public class LoginHandler implements Route {
     UserService userService = new UserService();
     @Override
     public Object handle(Request request, Response response) throws Exception {
+        response.type("application/json");
         var user = new Gson().fromJson(request.body(), UserData.class);
         return new Gson().toJson(userService.login(user));
     }

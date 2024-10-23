@@ -10,8 +10,9 @@ public class LogoutHandler implements Route {
     UserService userService = new UserService();
     @Override
     public Object handle(Request request, Response response) throws Exception {
+        response.type("application/json");
         String authorization = request.headers("authorization");
         userService.logout(authorization);
-        return new Gson().toJson("{}");
+        return "";
     }
 }

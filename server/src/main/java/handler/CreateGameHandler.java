@@ -15,9 +15,10 @@ public class CreateGameHandler implements Route {
     GameService gameService = new GameService();
     @Override
     public Object handle(Request request, Response response) throws Exception {
+        response.type("application/json");
         String authorization = request.headers("authorization");
         var gameName = new Gson().fromJson(request.body(), GameData.class);
         int gameId = gameService.createGame(gameName, authorization);
-        return new Gson().toJson(Map.of("gameId", gameId));
+        return new Gson().toJson(Map.of("gameID", gameId));
     }
 }

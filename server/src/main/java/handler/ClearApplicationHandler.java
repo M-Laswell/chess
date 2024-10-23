@@ -8,6 +8,7 @@ import spark.Route;
 public class ClearApplicationHandler implements Route {
     @Override
     public Object handle(Request request, Response response) throws Exception {
+        response.type("application/json");
         GameDAO game = MemoryGameDAO.getInstance();
         AuthDAO auth = MemoryAuthDAO.getInstance();
         UserDAO user = MemoryUserDAO.getInstance();
@@ -16,6 +17,6 @@ public class ClearApplicationHandler implements Route {
         auth.clear();
         user.clear();
 
-        return new Gson().toJson("{}");
+        return "";
     }
 }

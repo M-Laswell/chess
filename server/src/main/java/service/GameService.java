@@ -32,15 +32,15 @@ public class GameService {
         return gameDAO.listGames();
     }
 
-    public void joinGame(String token, String color, int gameID) throws DataAccessException {
+    public void joinGame(String token, ChessGame.TeamColor color, int gameID) throws DataAccessException {
         AuthData user = authService.authenticate(token);
         if(user == null){
             throw new DataAccessException("Authentication Failure");
         }
         GameData game = gameDAO.getGame(gameID);
-        if(color.equals("\"BLACK\"")){
+        if(color.equals(ChessGame.TeamColor.BLACK)){
             game.setBlackUsername(user.getUsername());
-        } else if(color.equals("\"WHITE\"")){
+        } else if(color.equals(ChessGame.TeamColor.WHITE)){
             game.setWhiteUsername(user.getUsername());
         }
         gameDAO.updateGame(gameID, game);
