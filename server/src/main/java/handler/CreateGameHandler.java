@@ -23,8 +23,12 @@ public class CreateGameHandler implements Route {
             int gameId = gameService.createGame(gameName, authorization);
             return new Gson().toJson(Map.of("gameID", gameId));
         } catch (DataAccessException e) {
-            System.out.println(e);
-            return null;
+            switch (e.getMessage()) {
+                case "Error: bad request" -> response.status(400);
+                case "Error: unauthorized" -> response.status(401);
+                default -> response.status(500);
+            };
+            return new Gson().toJson(Map.of("message", e.getMessage()));
         }
     }
 }

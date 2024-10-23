@@ -16,7 +16,10 @@ public class GameService {
     public int createGame(GameData game, String token) throws DataAccessException {
         AuthData user = authService.authenticate(token);
         if(user == null){
-            throw new DataAccessException("Authentication Failure");
+            throw new DataAccessException("Error: unauthorized");
+        }
+        if(game.getGameName() == null){
+            throw new DataAccessException("Error: bad request");
         }
         ChessGame newGame = new ChessGame();
         game.setGame(newGame);
@@ -27,7 +30,7 @@ public class GameService {
         //Authenticate User
         AuthData user = authService.authenticate(token);
         if(user == null){
-            throw new DataAccessException("Authentication Failure");
+            throw new DataAccessException("Error: unauthorized");
         }
         return gameDAO.listGames();
     }
