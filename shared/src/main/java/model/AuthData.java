@@ -11,7 +11,7 @@ public class AuthData {
     private final String username;
     private final String authToken;
 
-    AuthData(String authToken, String username) {
+    public AuthData(String authToken, String username) {
         this.username = username;
         this.authToken = authToken;
     }
