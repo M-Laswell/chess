@@ -21,7 +21,7 @@ public class ClearApplicationHandler implements Route {
             return "";
         } catch (DataAccessException e) {
             System.out.println(e);
-            return null;
+            return "";
         }
     }
 }

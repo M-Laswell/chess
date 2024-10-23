@@ -22,8 +22,8 @@ public class ListGameHandler implements Route {
             var games = gameService.getGames(authorization);
             return new GsonBuilder().serializeNulls().create().toJson(Map.of("games", games));
         } catch (DataAccessException e) {
-            System.out.println(e);
+            response.status(401);
+            return new Gson().toJson(Map.of("message", e.getMessage()));
         }
-        return null;
     }
 }

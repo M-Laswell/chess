@@ -40,7 +40,6 @@ public class GameService {
         if(user == null){
             throw new DataAccessException("Error: unauthorized");
         }
-        System.out.println(gameID);
         if(gameID == null || gameID == 0){
             throw new DataAccessException("Error: bad request");
         }
