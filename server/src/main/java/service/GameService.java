@@ -35,16 +35,31 @@ public class GameService {
         return gameDAO.listGames();
     }
 
-    public void joinGame(String token, ChessGame.TeamColor color, int gameID) throws DataAccessException {
+    public void joinGame(String token, ChessGame.TeamColor color, Integer gameID) throws DataAccessException {
         AuthData user = authService.authenticate(token);
         if(user == null){
-            throw new DataAccessException("Authentication Failure");
+            throw new DataAccessException("Error: unauthorized");
+        }
+        System.out.println(gameID);
+        if(gameID == null || gameID == 0){
+            throw new DataAccessException("Error: bad request");
         }
         GameData game = gameDAO.getGame(gameID);
+        if(game == null){
+            throw new DataAccessException("Error: bad request");
+        }
         if(color.equals(ChessGame.TeamColor.BLACK)){
+            if(game.getBlackUsername() != null){
+                throw new DataAccessException("Error: already taken");
+            }
             game.setBlackUsername(user.getUsername());
         } else if(color.equals(ChessGame.TeamColor.WHITE)){
+            if(game.getWhiteUsername() != null){
+                throw new DataAccessException("Error: already taken");
+            }
             game.setWhiteUsername(user.getUsername());
+        } else {
+            throw new DataAccessException("Error: bad request");
         }
         gameDAO.updateGame(gameID, game);
     }
