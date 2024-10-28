@@ -1,6 +1,7 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.AuthDAO;
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
 import model.AuthData;
@@ -17,6 +18,10 @@ import java.util.Locale;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthServiceTest {
+
+    private static MemoryAuthDAO authDAO = new MemoryAuthDAO();
+
+    private static AuthService authService = new AuthService();
 
     private static TestUser existingUser;
 
@@ -39,6 +44,7 @@ public class AuthServiceTest {
     public static void init() {
         server = new Server();
         var port = server.run(0);
+
         System.out.println("Started test HTTP server on " + port);
 
         serverFacade = new TestServerFacade("localhost", Integer.toString(port));
@@ -65,10 +71,10 @@ public class AuthServiceTest {
     @Order(1)
     @DisplayName("Authenticate - Success")
     public void testAuthenticateSuccess() throws DataAccessException {
-        AuthData expectedAuthData = new AuthData(testToken, testUsername);
-        authDAO.createAuth(expectedAuthData);  // Seed the DAO with a valid token
+        AuthData expectedAuthData = new AuthData(existingAuth,existingUser.getUsername());
+        authDAO.createAuth(expectedAuthData);
 
-        AuthData actualAuthData = authService.authenticate(testToken);
+        AuthData actualAuthData = authService.authenticate(existingAuth);
 
         Assertions.assertNotNull(actualAuthData, "AuthData should not be null for a valid token");
         Assertions.assertEquals(expectedAuthData, actualAuthData, "Returned AuthData should match expected");
