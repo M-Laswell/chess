@@ -1,6 +1,9 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
+import dataaccess.MemoryAuthDAO;
+import model.AuthData;
 import org.junit.jupiter.api.*;
 import passoff.model.*;
 import passoff.server.TestServerFacade;
@@ -26,6 +29,7 @@ public class AuthServiceTest {
 
     private String existingAuth;
 
+
     @AfterAll
     static void stopServer() {
         server.stop();
@@ -44,5 +48,29 @@ public class AuthServiceTest {
         newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
 
         createRequest = new TestCreateRequest("testGame");
+
+    }
+
+    @BeforeEach
+    public void setup() {
+        serverFacade.clear();
+
+        //one user already logged in
+        TestAuthResult regResult = serverFacade.register(existingUser);
+        existingAuth = regResult.getAuthToken();
+    }
+
+    // Test for authenticate success
+    @Test
+    @Order(1)
+    @DisplayName("Authenticate - Success")
+    public void testAuthenticateSuccess() throws DataAccessException {
+        AuthData expectedAuthData = new AuthData(testToken, testUsername);
+        authDAO.createAuth(expectedAuthData);  // Seed the DAO with a valid token
+
+        AuthData actualAuthData = authService.authenticate(testToken);
+
+        Assertions.assertNotNull(actualAuthData, "AuthData should not be null for a valid token");
+        Assertions.assertEquals(expectedAuthData, actualAuthData, "Returned AuthData should match expected");
     }
 }
