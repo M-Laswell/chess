@@ -31,7 +31,8 @@ public class JoinGameHandler implements Route {
             if(bodyJson.get("gameID") == null){
                 throw new DataAccessException("Error: bad request");
             }
-            gameService.joinGame(authorization, ChessGame.TeamColor.valueOf(bodyJson.get("playerColor").getAsString()), Integer.parseInt(String.valueOf(bodyJson.get("gameID"))));
+            gameService.joinGame(authorization, ChessGame.TeamColor.valueOf(bodyJson.get("playerColor").getAsString()),
+                    Integer.parseInt(String.valueOf(bodyJson.get("gameID"))));
             return "";
         } catch (DataAccessException e) {
             switch (e.getMessage()) {
