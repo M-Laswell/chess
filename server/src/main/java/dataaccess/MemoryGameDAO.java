@@ -44,11 +44,11 @@ public class MemoryGameDAO implements GameDAO{
         return games.get(gameID);
     }
 
-    @Override
+    /*@Override
     public void deleteGame(int gameID) throws DataAccessException {
         games.remove(gameID);
 
-    }
+    }*/
 
     @Override
     public void clear() throws DataAccessException {

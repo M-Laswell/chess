@@ -40,14 +40,14 @@ public class MemoryUserDAO implements UserDAO {
         }
     }
 
-    @Override
+/*@Override
     public void deleteUser(String username) throws DataAccessException {
         try {
             users.removeIf(user -> user.getUsername().equals(username));
         } catch (Exception e) {
             throw new DataAccessException("Failed to delete user");
         }
-    }
+    }*/
 
     @Override
     public void clear() throws DataAccessException {
