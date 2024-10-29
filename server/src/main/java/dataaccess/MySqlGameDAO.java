@@ -8,6 +8,13 @@ import java.util.List;
 
 public class MySqlGameDAO implements GameDAO{
 
+    public MySqlGameDAO() {
+        try {
+            this.configureDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public GameData createGame(GameData game) throws DataAccessException {

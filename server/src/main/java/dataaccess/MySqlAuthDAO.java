@@ -6,6 +6,13 @@ import java.sql.SQLException;
 
 public class MySqlAuthDAO implements AuthDAO{
 
+    public MySqlAuthDAO() {
+        try {
+            this.configureDatabase();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Override
     public AuthData createAuth(AuthData token) throws DataAccessException {

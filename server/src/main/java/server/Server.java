@@ -16,13 +16,17 @@ public class Server {
     private GameDAO gameDAO;
 
     public Server() {
-        this.userDAO = new MemoryUserDAO();
-        this.authDAO = new MemoryAuthDAO();
-        this.gameDAO = new MemoryGameDAO();
+        try {
+            this.userDAO = new MySqlUserDAO();
+            this.authDAO = new MySqlAuthDAO();
+            this.gameDAO = new MySqlGameDAO();
 
-        this.authService = new AuthService(authDAO);
-        this.userService = new UserService(userDAO, authService);
-        this.gameService = new GameService(gameDAO, authService);
+            this.authService = new AuthService(authDAO);
+            this.userService = new UserService(userDAO, authService);
+            this.gameService = new GameService(gameDAO, authService);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 
