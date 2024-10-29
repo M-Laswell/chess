@@ -7,6 +7,8 @@ import java.util.Collection;
 import java.util.List;
 
 public class MySqlGameDAO implements GameDAO{
+
+
     @Override
     public GameData createGame(GameData game) throws DataAccessException {
         return null;

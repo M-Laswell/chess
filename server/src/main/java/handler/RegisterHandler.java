@@ -12,7 +12,12 @@ import service.UserService;
 import java.util.Map;
 
 public class RegisterHandler implements Route {
-    UserService userService = new UserService();
+    private UserService userService;
+
+    public RegisterHandler(UserService userService){
+        this.userService = userService;
+    }
+
     @Override
     public Object handle(Request request, Response response) throws Exception {
         response.type("application/json");

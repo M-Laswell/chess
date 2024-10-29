@@ -10,7 +10,12 @@ import com.google.gson.Gson;
 import java.util.Map;
 
 public class LogoutHandler implements Route {
-    UserService userService = new UserService();
+    private UserService userService;
+
+    public LogoutHandler(UserService userService){
+        this.userService = userService;
+    }
+
     @Override
     public Object handle(Request request, Response response) throws Exception {
         response.type("application/json");

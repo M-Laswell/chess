@@ -2,14 +2,21 @@ package service;
 
 import dataaccess.DataAccessException;
 import dataaccess.MemoryUserDAO;
+import dataaccess.MySqlUserDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
 import service.AuthService;
 
 public class UserService {
-    AuthService authService = new AuthService();
-    UserDAO userDAO = MemoryUserDAO.getInstance();
+    AuthService authService;
+    UserDAO userDAO;
+
+    public UserService(UserDAO userDAO, AuthService authService){
+        this.userDAO = userDAO;
+        this.authService = authService;
+    }
+
 
     public AuthData register(UserData user) throws DataAccessException {
         //Check if User already exists

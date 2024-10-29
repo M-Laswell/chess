@@ -21,7 +21,7 @@ public class AuthServiceTest {
 
     private static MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
-    private static AuthService authService = new AuthService();
+    private static AuthService authService = new AuthService(authDAO);
 
     private static TestUser existingUser;
 

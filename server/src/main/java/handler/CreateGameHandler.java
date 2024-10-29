@@ -3,6 +3,8 @@ package handler;
 import dataaccess.DataAccessException;
 import model.GameData;
 import model.UserData;
+import service.AuthService;
+import service.UserService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
@@ -13,7 +15,12 @@ import java.util.Map;
 
 
 public class CreateGameHandler implements Route {
-    GameService gameService = new GameService();
+    private GameService gameService;
+
+    public CreateGameHandler(GameService gameService){
+        this.gameService = gameService;
+    }
+
     @Override
     public Object handle(Request request, Response response) throws Exception {
         response.type("application/json");

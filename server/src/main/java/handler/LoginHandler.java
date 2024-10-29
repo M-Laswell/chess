@@ -2,6 +2,7 @@ package handler;
 
 import dataaccess.DataAccessException;
 import model.UserData;
+import service.GameService;
 import service.UserService;
 import spark.Request;
 import spark.Response;
@@ -12,7 +13,12 @@ import java.util.Map;
 
 
 public class LoginHandler implements Route {
-    UserService userService = new UserService();
+    private UserService userService;
+
+    public LoginHandler(UserService userService){
+        this.userService = userService;
+    }
+
     @Override
     public Object handle(Request request, Response response) throws Exception {
         response.type("application/json");

@@ -4,14 +4,21 @@ import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.GameDAO;
 import dataaccess.MemoryGameDAO;
+import dataaccess.MySqlGameDAO;
 import model.AuthData;
 import model.GameData;
 
 import java.util.Collection;
 
 public class GameService {
-    GameDAO gameDAO = MemoryGameDAO.getInstance();
-    AuthService authService = new AuthService();
+    private final GameDAO gameDAO;
+    private final AuthService authService;
+
+    public GameService(GameDAO gameDAO, AuthService authService){
+        this.gameDAO = gameDAO;
+        this.authService = authService;
+
+    }
 
     public int createGame(GameData game, String token) throws DataAccessException {
         AuthData user = authService.authenticate(token);

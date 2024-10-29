@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 public class MySqlAuthDAO implements AuthDAO{
 
+
     @Override
     public AuthData createAuth(AuthData token) throws DataAccessException {
         return null;

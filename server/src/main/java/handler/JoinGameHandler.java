@@ -13,7 +13,12 @@ import com.google.gson.Gson;
 import java.util.Map;
 
 public class JoinGameHandler implements Route {
-    GameService gameService = new GameService();
+    private GameService gameService;
+
+    public JoinGameHandler(GameService gameService){
+        this.gameService = gameService;
+    }
+
     @Override
     public Object handle(Request request, Response response) throws Exception {
         response.type("application/json");
