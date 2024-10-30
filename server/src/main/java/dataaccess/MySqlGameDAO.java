@@ -22,7 +22,15 @@ public class MySqlGameDAO implements GameDAO{
     public GameData createGame(GameData game) throws DataAccessException {
         var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, gameJSON) VALUES (?, ?, ?, ?, ?)";
         var gameJSON = new Gson().toJson(game.getGame());
-        var id = DatabaseManager.executeUpdate(statement, game.getGameID(), game.getWhiteUsername(), game.getBlackUsername(), game.getGameName(), gameJSON);
+
+        var id = DatabaseManager.executeUpdate(
+                statement,
+                game.getGameID(),
+                game.getWhiteUsername(),
+                game.getBlackUsername(),
+                game.getGameName(),
+                gameJSON);
+
         game.setGameID(id);
         return game;
     }
