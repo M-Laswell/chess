@@ -6,6 +6,7 @@ import dataaccess.MySqlUserDAO;
 import dataaccess.UserDAO;
 import model.AuthData;
 import model.UserData;
+import org.mindrot.jbcrypt.BCrypt;
 import service.AuthService;
 
 public class UserService {
@@ -45,7 +46,7 @@ public class UserService {
         if(userDAO.getUser(user.getUsername()) == null){
             throw new DataAccessException("Error: unauthorized");
         }
-        if(userDAO.getUser(user.getUsername()).getPassword().equals(user.getPassword())) {
+        if(BCrypt.checkpw(user.getPassword(), userDAO.getUser(user.getUsername()).getPassword())) {
             return authService.createAuth(user.getUsername());
         }
         throw new DataAccessException("Error: unauthorized");
