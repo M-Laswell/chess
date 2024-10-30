@@ -7,8 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 public class MySqlGameDAO implements GameDAO{
 
@@ -24,7 +22,7 @@ public class MySqlGameDAO implements GameDAO{
     public GameData createGame(GameData game) throws DataAccessException {
         var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, gameJSON) VALUES (?, ?, ?, ?, ?)";
         var gameJSON = new Gson().toJson(game.getGame());
-        var id = executeUpdate(statement, game.getGameID(), game.getWhiteUsername(), game.getBlackUsername(), game.getGameName(), gameJSON);
+        var id = DatabaseManager.executeUpdate(statement, game.getGameID(), game.getWhiteUsername(), game.getBlackUsername(), game.getGameName(), gameJSON);
         game.setGameID(id);
         return game;
     }
@@ -69,14 +67,14 @@ public class MySqlGameDAO implements GameDAO{
     public GameData updateGame(int gameID, GameData game) throws DataAccessException {
         var statement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameJSON = ? WHERE gameID = ?";
         var gameJSON = new Gson().toJson(game.getGame());
-        executeUpdate(statement, game.getWhiteUsername(), game.getBlackUsername(), gameJSON, gameID);
+        DatabaseManager.executeUpdate(statement, game.getWhiteUsername(), game.getBlackUsername(), gameJSON, gameID);
         return getGame(gameID);
     }
 
     @Override
     public void clear() throws DataAccessException {
         var statement = "TRUNCATE game";
-        executeUpdate(statement);
+        DatabaseManager.executeUpdate(statement);
     }
 
     private final String[] createStatements = {
@@ -113,31 +111,6 @@ public class MySqlGameDAO implements GameDAO{
             game  = new Gson().fromJson(gameJSON, ChessGame.class);
         }
         return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
-    }
-
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param instanceof GameData p) ps.setString(i + 1, p.toString());
-                    else if (param instanceof ChessGame p) ps.setString(i + 1, p.toString());
-                    else if (param == null) ps.setNull(i + 1, NULL);
-                }
-                ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
-        }
     }
 
 }

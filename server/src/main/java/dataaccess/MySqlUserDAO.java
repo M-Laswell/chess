@@ -3,12 +3,8 @@ package dataaccess;
 
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
-import static java.sql.Statement.RETURN_GENERATED_KEYS;
-import static java.sql.Types.NULL;
 
 
 public class MySqlUserDAO implements UserDAO {
@@ -25,7 +21,7 @@ public class MySqlUserDAO implements UserDAO {
     public UserData createUser(UserData user) throws DataAccessException {
         var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
         var hashedPass = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
-        var id = executeUpdate(statement, user.getUsername(), hashedPass, user.getEmail());
+        var id = DatabaseManager.executeUpdate(statement, user.getUsername(), hashedPass, user.getEmail());
         return user;
     }
 
@@ -50,7 +46,7 @@ public class MySqlUserDAO implements UserDAO {
     @Override
     public void clear() throws DataAccessException {
         var statement = "TRUNCATE user";
-        executeUpdate(statement);
+        DatabaseManager.executeUpdate(statement);
 
     }
     private final String[] createStatements = {
@@ -72,30 +68,6 @@ public class MySqlUserDAO implements UserDAO {
         var hashedPassword = rs.getString("password");
         var email = rs.getString("email");
         return new UserData(username, hashedPassword, email);
-    }
-
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
-                for (var i = 0; i < params.length; i++) {
-                    var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param instanceof UserData p) ps.setString(i + 1, p.toString());
-                    else if (param == null) ps.setNull(i + 1, NULL);
-                }
-                ps.executeUpdate();
-
-                var rs = ps.getGeneratedKeys();
-                if (rs.next()) {
-                    return rs.getInt(1);
-                }
-
-                return 0;
-            }
-        } catch (SQLException e) {
-            throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
-        }
     }
 
 }
