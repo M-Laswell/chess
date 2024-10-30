@@ -25,9 +25,9 @@ public class CreateGameHandler implements Route {
     public Object handle(Request request, Response response) throws Exception {
         response.type("application/json");
         String authorization = request.headers("authorization");
-        var gameName = new Gson().fromJson(request.body(), GameData.class);
+        var game = new Gson().fromJson(request.body(), GameData.class);
         try {
-            int gameId = gameService.createGame(gameName, authorization);
+            int gameId = gameService.createGame(game, authorization);
             return new Gson().toJson(Map.of("gameID", gameId));
         } catch (DataAccessException e) {
             switch (e.getMessage()) {

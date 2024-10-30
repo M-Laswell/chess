@@ -19,7 +19,7 @@ public class Server {
         try {
             this.userDAO = new MySqlUserDAO();
             this.authDAO = new MySqlAuthDAO();
-            this.gameDAO = new MemoryGameDAO();
+            this.gameDAO = new MySqlGameDAO();
 
             this.authService = new AuthService(authDAO);
             this.userService = new UserService(userDAO, authService);

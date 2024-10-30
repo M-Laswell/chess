@@ -1,6 +1,6 @@
 package dataaccess;
 
-import model.AuthData;
+
 import model.UserData;
 import org.mindrot.jbcrypt.BCrypt;
 
@@ -76,7 +76,7 @@ public class MySqlUserDAO implements UserDAO {
                 }
             }
         } catch (SQLException ex) {
-            //throw new DataAccessException(500, String.format("Unable to configure database: %s", ex.getMessage()));
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
 
