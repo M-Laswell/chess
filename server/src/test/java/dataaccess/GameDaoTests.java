@@ -72,8 +72,15 @@ public class GameDaoTests {
     @Order(6)
     @DisplayName("List - Failure")
     public void testListFailure() throws DataAccessException {
+        boolean nothingToList = false;
+        var result = gameDAO.listGames();
+        if (result.isEmpty()){
+            nothingToList = true;
+        }
 
-        Assertions.assertThrows( DataAccessException.class, () -> gameDAO.listGames());
+        Assertions.assertEquals(true, nothingToList, " should be an empty array");
+
+
 
     }
 
