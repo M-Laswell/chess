@@ -32,10 +32,12 @@ public class UserService {
             throw new DataAccessException("Error: bad request");
         }
 
-
-
         if(userDAO.getUser(user.getUsername()) == null) {
-            userDAO.createUser(user);
+            UserData safeUser = new UserData(
+                    user.getUsername(),
+                    BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()),
+                    user.getEmail());
+            userDAO.createUser(safeUser);
             return authService.createAuth(user.getUsername());
         }
         throw new DataAccessException("Error: already taken");
