@@ -18,13 +18,30 @@ public class MySqlUserDAO implements UserDAO {
 
     @Override
     public UserData createUser(UserData user) throws DataAccessException {
+
+        if(user.getPassword() == null) {
+            throw new DataAccessException("Error: bad request");
+        }
+        if(user.getUsername() == null) {
+            throw new DataAccessException("Error: bad request");
+        }
+        if(user.getEmail() == null) {
+            throw new DataAccessException("Error: bad request");
+        }
+
         var statement = "INSERT INTO user (username, password, email) VALUES (?, ?, ?)";
         var id = DatabaseManager.executeUpdate(statement, user.getUsername(), user.getPassword(), user.getEmail());
         return user;
+
     }
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
+
+        if(username == null) {
+            throw new DataAccessException("Error: bad request");
+        }
+
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username, password, email FROM user WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
