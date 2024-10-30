@@ -36,7 +36,7 @@ public class AuthDaoTests {
     @Order(3)
     @DisplayName("Get - Success")
     public void testAuthenticateSuccess() throws DataAccessException {
-        AuthData token = new AuthData(UUID.randomUUID().toString(), "Hermoine");
+        AuthData token = new AuthData(UUID.randomUUID().toString(), "Hermoineeee");
         authDAO.createAuth(token);
         AuthData tokenGot = authDAO.getAuth(token.getAuthToken());
 
@@ -70,7 +70,7 @@ public class AuthDaoTests {
     @Order(6)
     @DisplayName("Delete - Failure")
     public void testDeleteFailure() throws DataAccessException {
-        AuthData token = new AuthData(UUID.randomUUID().toString(), "Hermoine");
+        AuthData token = new AuthData(UUID.randomUUID().toString(), "Hermoineee");
         authDAO.createAuth(token);
 
         Assertions.assertThrows(DataAccessException.class, () -> authDAO.deleteAuth(null));
