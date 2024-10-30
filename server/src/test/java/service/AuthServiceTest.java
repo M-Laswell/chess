@@ -78,7 +78,7 @@ public class AuthServiceTest {
         AuthData token = authService.createAuth("hermoine");
         authService.deleteAuth("1234");
 
-        Assertions.assertNotNull(authService.authenticate(token.getAuthToken()), "token should be returning a non-null value ");
+        Assertions.assertNotNull(authService.authenticate(token.getAuthToken()), "token should be returning a null value ");
 
     }
 
@@ -89,7 +89,7 @@ public class AuthServiceTest {
         AuthData token = authService.createAuth("hermoine");
         authService.clear();
 
-        Assertions.assertNull(authService.authenticate(token.getAuthToken()), "token should be returning a non-null value ");
+        Assertions.assertNull(authService.authenticate(token.getAuthToken()), "token should be returning a null value ");
 
     }
 }
