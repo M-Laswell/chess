@@ -1,23 +1,13 @@
 package dataaccess;
 
 import model.AuthData;
-
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Objects;
 
 public class MemoryAuthDAO implements AuthDAO{
-    private static MemoryAuthDAO instance;
+
     public Collection<AuthData> tokensList = new HashSet<AuthData>();
-
-    public static MemoryAuthDAO getInstance(){
-        if (instance == null) {
-            instance = new MemoryAuthDAO();
-        }
-        return instance;
-    }
-
-
 
 
     @Override

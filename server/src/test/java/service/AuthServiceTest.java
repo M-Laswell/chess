@@ -19,62 +19,20 @@ import java.util.Locale;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class AuthServiceTest {
 
-    private static MemoryAuthDAO authDAO = new MemoryAuthDAO();
 
-    private static AuthService authService = new AuthService(authDAO);
-
-    private static TestUser existingUser;
-
-    private static TestUser newUser;
-
-    private static TestCreateRequest createRequest;
-
-    private static TestServerFacade serverFacade;
-    private static Server server;
-
-    private String existingAuth;
-
-
-    @AfterAll
-    static void stopServer() {
-        server.stop();
-    }
-
-    @BeforeAll
-    public static void init() {
-        server = new Server();
-        var port = server.run(0);
-
-        System.out.println("Started test HTTP server on " + port);
-
-        serverFacade = new TestServerFacade("localhost", Integer.toString(port));
-
-        existingUser = new TestUser("ExistingUser", "existingUserPassword", "eu@mail.com");
-
-        newUser = new TestUser("NewUser", "newUserPassword", "nu@mail.com");
-
-        createRequest = new TestCreateRequest("testGame");
-
-    }
-
-    @BeforeEach
-    public void setup() {
-        serverFacade.clear();
-
-        //one user already logged in
-        TestAuthResult regResult = serverFacade.register(existingUser);
-        existingAuth = regResult.getAuthToken();
-    }
+    AuthDAO authDAO = new MemoryAuthDAO();
+    AuthService authService = new AuthService(authDAO);
 
     // Test for authenticate success
     @Test
     @Order(1)
     @DisplayName("Authenticate - Success")
     public void testAuthenticateSuccess() throws DataAccessException {
-        AuthData expectedAuthData = new AuthData(existingAuth,existingUser.getUsername());
-        authDAO.createAuth(expectedAuthData);
+        AuthData token = authService.createAuth("hermoine");
 
-        AuthData actualAuthData = authService.authenticate(existingAuth);
+        AuthData expectedAuthData = new AuthData(token.getAuthToken(), token.getUsername());
+
+        AuthData actualAuthData = authService.authenticate(token.getAuthToken());
 
         Assertions.assertNotNull(actualAuthData, "AuthData should not be null for a valid token");
         Assertions.assertEquals(expectedAuthData, actualAuthData, "Returned AuthData should match expected");

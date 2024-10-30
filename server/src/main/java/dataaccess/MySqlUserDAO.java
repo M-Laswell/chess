@@ -15,7 +15,7 @@ public class MySqlUserDAO implements UserDAO {
 
     public MySqlUserDAO() {
         try {
-            this.configureDatabase();
+            DatabaseManager.configureDatabase(createStatements);
         } catch (DataAccessException e) {
             throw new RuntimeException(e);
         }
@@ -66,19 +66,6 @@ public class MySqlUserDAO implements UserDAO {
             """
     };
 
-
-    private void configureDatabase() throws DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            for (var statement : createStatements) {
-                try (var preparedStatement = conn.prepareStatement(statement)) {
-                    preparedStatement.executeUpdate();
-                }
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 
     private UserData readUser(ResultSet rs) throws SQLException {
         var username = rs.getString("username");

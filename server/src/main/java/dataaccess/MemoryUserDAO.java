@@ -6,15 +6,9 @@ import java.util.Collection;
 import java.util.HashSet;
 
 public class MemoryUserDAO implements UserDAO {
-    private static MemoryUserDAO instance;
     Collection<UserData> users = new HashSet<UserData>();
 
-    public static MemoryUserDAO getInstance(){
-        if (instance == null) {
-            instance = new MemoryUserDAO();
-        }
-        return instance;
-    }
+
 
     @Override
     public UserData createUser(UserData user) throws DataAccessException {
@@ -40,14 +34,6 @@ public class MemoryUserDAO implements UserDAO {
         }
     }
 
-/*@Override
-    public void deleteUser(String username) throws DataAccessException {
-        try {
-            users.removeIf(user -> user.getUsername().equals(username));
-        } catch (Exception e) {
-            throw new DataAccessException("Failed to delete user");
-        }
-    }*/
 
     @Override
     public void clear() throws DataAccessException {
