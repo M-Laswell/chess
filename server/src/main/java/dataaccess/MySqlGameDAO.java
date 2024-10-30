@@ -20,6 +20,11 @@ public class MySqlGameDAO implements GameDAO{
 
     @Override
     public GameData createGame(GameData game) throws DataAccessException {
+
+        if (game == null){
+            throw new DataAccessException(" Game cannot be null");
+        }
+
         var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, gameJSON) VALUES (?, ?, ?, ?, ?)";
         var gameJSON = new Gson().toJson(game.getGame());
 
@@ -37,6 +42,10 @@ public class MySqlGameDAO implements GameDAO{
 
     @Override
     public GameData getGame(int gameID) throws DataAccessException {
+
+        if (gameID == 0){
+            throw new DataAccessException(" GameID cannot be null");
+        }
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT * FROM game WHERE gameID=?";
             try (var ps = conn.prepareStatement(statement)) {
@@ -68,11 +77,17 @@ public class MySqlGameDAO implements GameDAO{
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
+        if (result.isEmpty()){
+            throw new DataAccessException("no games available to list");
+        }
         return result;
     }
 
     @Override
     public GameData updateGame(int gameID, GameData game) throws DataAccessException {
+        if (game == null) {
+            throw new DataAccessException("game cant be null");
+        }
         var statement = "UPDATE game SET whiteUsername = ?, blackUsername = ?, gameJSON = ? WHERE gameID = ?";
         var gameJSON = new Gson().toJson(game.getGame());
         DatabaseManager.executeUpdate(statement, game.getWhiteUsername(), game.getBlackUsername(), gameJSON, gameID);
