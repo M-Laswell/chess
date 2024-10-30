@@ -43,7 +43,7 @@ public class Server {
         Spark.get("/game", new handler.ListGameHandler(gameService));
         Spark.post("/game", new handler.CreateGameHandler(gameService));
         Spark.put("/game", new handler.JoinGameHandler(gameService));
-        Spark.delete("/db", new handler.ClearApplicationHandler(userDAO, authDAO, gameDAO));
+        Spark.delete("/db", new handler.ClearApplicationHandler(userService, authService, gameService));
 
         //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.init();

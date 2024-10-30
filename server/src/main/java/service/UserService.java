@@ -58,6 +58,9 @@ public class UserService {
             throw new DataAccessException("Error: unauthorized");
         }
         authService.deleteAuth(token);
+    }
 
+    public void clear() throws DataAccessException{
+        userDAO.clear();
     }
 }

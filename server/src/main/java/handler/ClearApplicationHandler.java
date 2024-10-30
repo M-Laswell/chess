@@ -9,27 +9,24 @@ import spark.Response;
 import spark.Route;
 
 public class ClearApplicationHandler implements Route {
-    private UserDAO userDAO;
-    private AuthDAO authDAO;
-    private GameDAO gameDAO;
+    private UserService userService;
+    private AuthService authService;
+    private GameService gameService;
 
-    public ClearApplicationHandler(UserDAO userDAO, AuthDAO authDAO, GameDAO gameDAO){
-        this.userDAO = userDAO;
-        this.authDAO = authDAO;
-        this.gameDAO = gameDAO;
+    public ClearApplicationHandler(UserService userService, AuthService authService, GameService gameService){
+        this.userService = userService;
+        this.authService = authService;
+        this.gameService = gameService;
     }
 
     @Override
     public Object handle(Request request, Response response) throws Exception {
         response.type("application/json");
-        GameDAO game = this.gameDAO;
-        AuthDAO auth = this.authDAO;
-        UserDAO user = this.userDAO;
 
         try {
-            game.clear();
-            auth.clear();
-            user.clear();
+            gameService.clear();
+            authService.clear();
+            userService.clear();
 
             return "";
         } catch (DataAccessException e) {
