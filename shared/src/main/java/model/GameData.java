@@ -72,7 +72,8 @@ public class GameData {
         if (this == o) {return true;}
         if (o == null || getClass() != o.getClass()) {return false;}
         GameData gameData = (GameData) o;
-        return gameID == gameData.gameID && Objects.equals(whiteUsername, gameData.whiteUsername) && Objects.equals(blackUsername, gameData.blackUsername)
+        return gameID == gameData.gameID && Objects.equals(whiteUsername, gameData.whiteUsername)
+                && Objects.equals(blackUsername, gameData.blackUsername)
                 && Objects.equals(gameName, gameData.gameName) && Objects.equals(game, gameData.game);
     }
 
