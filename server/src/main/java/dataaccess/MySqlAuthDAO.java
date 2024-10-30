@@ -17,6 +17,9 @@ public class MySqlAuthDAO implements AuthDAO{
 
     @Override
     public AuthData createAuth(AuthData token) throws DataAccessException {
+        if (token == null){
+            throw new DataAccessException( "user cant be null " );
+        }
         var statement = "INSERT INTO auth (uuid, username) VALUES (?, ?)";
         var id = DatabaseManager.executeUpdate(statement, token.getAuthToken(), token.getUsername());
         return token;
@@ -24,6 +27,9 @@ public class MySqlAuthDAO implements AuthDAO{
 
     @Override
     public AuthData getAuth(String uuid) throws DataAccessException {
+        if (uuid == null){
+            throw new DataAccessException( "uuid cant be null " );
+        }
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT uuid, username FROM auth WHERE uuid=?";
             try (var ps = conn.prepareStatement(statement)) {
@@ -42,6 +48,9 @@ public class MySqlAuthDAO implements AuthDAO{
 
     @Override
     public void deleteAuth(String uuid) throws DataAccessException {
+        if (uuid == null){
+            throw new DataAccessException( "uuid cant be null " );
+        }
         var statement = "DELETE FROM auth WHERE uuid=?";
         DatabaseManager.executeUpdate(statement, uuid);
     }

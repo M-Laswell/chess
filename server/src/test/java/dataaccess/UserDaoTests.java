@@ -54,10 +54,21 @@ public class UserDaoTests {
     }
 
 
+    @BeforeEach
+    public void testClear() throws DataAccessException {
+
+        userDAO.clear();
+
+        Assertions.assertNull(userDAO.getUser("Hermoine"), "Should be null");
+
+    }
+
     @Test
     @BeforeEach
     @DisplayName("Clear - Success")
     public void testClearSuccess() throws DataAccessException {
+        UserData newUser = new UserData("Hermoine", "Alohamora", "wizKid27@myspace.com");
+        userDAO.createUser(newUser);
 
         userDAO.clear();
 
