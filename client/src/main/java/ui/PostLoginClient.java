@@ -1,6 +1,8 @@
 package ui;
 
 import chess.ChessGame;
+import exception.ResponseException;
+import server.ServerFacade;
 
 import java.util.Arrays;
 
@@ -8,6 +10,7 @@ import static java.lang.String.valueOf;
 
 public class PostLoginClient implements Client{
     private final String serverUrl;
+    private ServerFacade server;
     private final Repl repl;
 
     public PostLoginClient(String serverUrl, Repl repl) {
@@ -36,6 +39,12 @@ public class PostLoginClient implements Client{
         }
     }
     private String logout(){
+        server = new ServerFacade(this.serverUrl);
+        try {
+            server.logout();
+        } catch (ResponseException e) {
+            System.out.println(e);
+        }
         this.repl.changeState(State.SIGNEDOUT);
         return "Logging Out";
     }
@@ -44,6 +53,12 @@ public class PostLoginClient implements Client{
     }
 
     private String listGames(){
+        server = new ServerFacade(this.serverUrl);
+        try {
+            server.listGames();
+        } catch (ResponseException e) {
+            System.out.println(e);
+        }
         return "List Games";
     }
 

@@ -1,6 +1,7 @@
 package ui;
 
 import exception.ResponseException;
+import model.AuthData;
 import model.UserData;
 import server.ServerFacade;
 
@@ -39,7 +40,8 @@ public class PreLoginClient implements Client{
         UserData data = new UserData(username, password ,null);
         server = new ServerFacade(this.serverUrl);
         try {
-            System.out.println(server.login(data));
+            AuthData auth = server.login(data);
+            this.repl.setAuthData(auth);
         } catch (ResponseException e) {
             System.out.println(e);
         }
@@ -51,7 +53,8 @@ public class PreLoginClient implements Client{
         UserData data = new UserData(username, password ,email);
         server = new ServerFacade(this.serverUrl);
         try {
-            server.register(data);
+            AuthData auth = server.register(data);
+            this.repl.setAuthData(auth);
         } catch (ResponseException e) {
             System.out.println(e);
         }

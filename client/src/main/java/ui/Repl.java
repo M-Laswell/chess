@@ -1,5 +1,7 @@
 package ui;
 
+import model.AuthData;
+
 import static ui.EscapeSequences.*;
 import java.util.Scanner;
 
@@ -9,6 +11,7 @@ public class Repl{
     private final GameplayClient gameplayClient;
     private Client client;
     private State state;
+    private AuthData authData;
 
     public Repl(String serverUrl) {
         preLoginClient = new PreLoginClient(serverUrl, this);
@@ -40,6 +43,7 @@ public class Repl{
     }
 
 
+
     private void printPrompt() {
         System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
     }
@@ -54,4 +58,11 @@ public class Repl{
         } ;
     }
 
+    public AuthData getAuthData() {
+        return authData;
+    }
+
+    public void setAuthData(AuthData authData) {
+        this.authData = authData;
+    }
 }

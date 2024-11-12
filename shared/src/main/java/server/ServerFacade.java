@@ -30,11 +30,11 @@ public class ServerFacade {
         return this.makeRequest("DELETE", path, auth, null);
     }
 
-    public GameData[] listGames() throws ResponseException {
+    public GameData[] listGames(AuthData auth) throws ResponseException {
         var path = "/game";
         record listGameResponse(GameData[] game) {
         }
-        var response = this.makeRequest("GET", path, null, listGameResponse.class);
+        var response = this.makeRequest("GET", path, auth, listGameResponse.class);
         return response.game;
     }
 
