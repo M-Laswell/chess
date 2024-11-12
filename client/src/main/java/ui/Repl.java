@@ -1,14 +1,19 @@
 package ui;
 
-import com.sun.nio.sctp.NotificationHandler;
 import static ui.EscapeSequences.*;
 import java.util.Scanner;
 
 public class Repl{
-    private final ChessClient client;
+    private final PreLoginClient preLoginClient;
+    private final PostLoginClient postLoginClient;
+    private final GameplayClient gameplayClient;
+    private Client client;
 
     public Repl(String serverUrl) {
-        client = new ChessClient(serverUrl);
+        preLoginClient = new PreLoginClient(serverUrl);
+        postLoginClient = new PostLoginClient(serverUrl);
+        gameplayClient = new GameplayClient(serverUrl);
+        client = postLoginClient;
     }
 
     public void run() {
