@@ -13,7 +13,7 @@ public class Repl{
         preLoginClient = new PreLoginClient(serverUrl);
         postLoginClient = new PostLoginClient(serverUrl);
         gameplayClient = new GameplayClient(serverUrl);
-        client = postLoginClient;
+        client = preLoginClient;
     }
 
     public void run() {

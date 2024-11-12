@@ -15,6 +15,13 @@ public class GameplayClient implements Client{
 
     @Override
     public String help() {
-        return "Gameplay Help";
+        return """
+                - list
+                - adopt <pet id>
+                - rescue <name> <CAT|DOG|FROG|FISH>
+                - adoptAll
+                - signOut
+                - quit
+                """;
     }
 }
