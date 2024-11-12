@@ -41,11 +41,12 @@ public class PostLoginClient implements Client{
     private String logout(){
         server = new ServerFacade(this.serverUrl);
         try {
-            server.logout();
+            System.out.println(this.repl.getAuthData());
+            server.logout(this.repl.getAuthData());
+            this.repl.changeState(State.SIGNEDOUT);
         } catch (ResponseException e) {
             System.out.println(e);
         }
-        this.repl.changeState(State.SIGNEDOUT);
         return "Logging Out";
     }
     private String createGame(String gameName){
@@ -55,7 +56,7 @@ public class PostLoginClient implements Client{
     private String listGames(){
         server = new ServerFacade(this.serverUrl);
         try {
-            server.listGames();
+            System.out.println(server.listGames(this.repl.getAuthData()));
         } catch (ResponseException e) {
             System.out.println(e);
         }

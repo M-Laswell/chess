@@ -17,34 +17,36 @@ public class ServerFacade {
 
     public AuthData login(UserData user) throws ResponseException {
         var path = "/session";
-        return this.makeRequest("POST", path, user, AuthData.class);
+        return this.makeRequest("POST", path, user, AuthData.class, null);
     }
 
     public AuthData register(UserData user) throws ResponseException {
         var path = "/user";
-        return this.makeRequest("POST", path, user, AuthData.class);
+        return this.makeRequest("POST", path, user, AuthData.class, null);
     }
 
     public AuthData logout(AuthData auth) throws ResponseException {
         var path = "/session";
-        return this.makeRequest("DELETE", path, auth, null);
+        return this.makeRequest("DELETE", path, null, null, auth);
     }
 
     public GameData[] listGames(AuthData auth) throws ResponseException {
         var path = "/game";
         record listGameResponse(GameData[] game) {
         }
-        var response = this.makeRequest("GET", path, auth, listGameResponse.class);
+        var response = this.makeRequest("GET", path, null, listGameResponse.class, auth);
         return response.game;
     }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, AuthData authData) throws ResponseException {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
-
+            if(authData != null) {
+                http.addRequestProperty("Authorization", authData.getAuthToken());
+            }
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);

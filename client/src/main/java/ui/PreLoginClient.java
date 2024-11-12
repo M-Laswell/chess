@@ -42,10 +42,11 @@ public class PreLoginClient implements Client{
         try {
             AuthData auth = server.login(data);
             this.repl.setAuthData(auth);
+            this.repl.changeState(State.SIGNEDIN);
         } catch (ResponseException e) {
             System.out.println(e);
         }
-        this.repl.changeState(State.SIGNEDIN);
+
         return "Logging In";
     }
 
@@ -55,10 +56,10 @@ public class PreLoginClient implements Client{
         try {
             AuthData auth = server.register(data);
             this.repl.setAuthData(auth);
+            this.repl.changeState(State.SIGNEDIN);
         } catch (ResponseException e) {
             System.out.println(e);
         }
-        this.repl.changeState(State.SIGNEDIN);
         return "Registering Offender";
     }
 
