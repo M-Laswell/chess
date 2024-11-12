@@ -17,14 +17,14 @@ public class PostLoginClient implements Client{
     @Override
     public String eval(String command) {
         try {
-            var tokens = command.toLowerCase().split(" ");
+            var tokens = command.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "logout" -> logout();
                 case "creategame" -> createGame(params[0]);
                 case "listgames" -> listGames();
-                case "playgame" -> playGame(params[0], params[1]);
+                case "playgame" -> playGame(params[0], ChessGame.TeamColor.valueOf(params[1].toUpperCase()));
                 case "observegame" -> observeGame(params[0]);
                 case "quit", "q" -> "quit";
                 default -> help();
@@ -44,7 +44,7 @@ public class PostLoginClient implements Client{
         return "List Games";
     }
 
-    private String playGame(String gameID, String teamColor){
+    private String playGame(String gameID, ChessGame.TeamColor teamColor){
         return "Shall We Play A Game?";
     }
 

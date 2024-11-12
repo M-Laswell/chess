@@ -14,7 +14,7 @@ public class PreLoginClient implements Client{
     @Override
     public String eval(String command){
         try {
-            var tokens = command.toLowerCase().split(" ");
+            var tokens = command.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
