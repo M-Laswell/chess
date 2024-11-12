@@ -1,10 +1,14 @@
 package ui;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import exception.ResponseException;
+import model.GameData;
 import server.ServerFacade;
 
 import java.util.Arrays;
+import java.util.Map;
 
 import static java.lang.String.valueOf;
 
@@ -29,7 +33,7 @@ public class PostLoginClient implements Client{
                 case "logout" -> logout();
                 case "creategame" -> createGame(params[0]);
                 case "listgames" -> listGames();
-                case "playgame" -> playGame(params[0], ChessGame.TeamColor.valueOf(params[1].toUpperCase()));
+                case "playgame" -> playGame(Integer.parseInt(params[0]), ChessGame.TeamColor.valueOf(params[1].toUpperCase()));
                 case "observegame" -> observeGame(params[0]);
                 case "quit", "q" -> "quit";
                 default -> help();
@@ -50,21 +54,41 @@ public class PostLoginClient implements Client{
         return "Logging Out";
     }
     private String createGame(String gameName){
+        server = new ServerFacade(this.serverUrl);
+        GameData newGame = new GameData(0, null, null, gameName, null);
+        try {
+            server.createGame(this.repl.getAuthData(), newGame);
+        } catch (ResponseException e) {
+            System.out.println(e);
+        }
         return "Create Game";
     }
 
     private String listGames(){
         server = new ServerFacade(this.serverUrl);
         try {
-            System.out.println(server.listGames(this.repl.getAuthData()));
+            var games = server.listGames(this.repl.getAuthData());
+            for(GameData game : games){
+                System.out.print(" Game ID: " + game.getGameID());
+                System.out.print("\t Game Name: " + game.getGameName());
+                System.out.print("\t White Player: " + game.getWhiteUsername());
+                System.out.println("\t Black Player: " + game.getBlackUsername());
+            }
+
         } catch (ResponseException e) {
             System.out.println(e);
         }
         return "List Games";
     }
 
-    private String playGame(String gameID, ChessGame.TeamColor teamColor){
-        this.repl.changeState(State.INGAME);
+    private String playGame(int gameID, ChessGame.TeamColor teamColor){
+        server = new ServerFacade(this.serverUrl);
+        try {
+            server.joinGame(this.repl.getAuthData(), teamColor, gameID);
+            this.repl.changeState(State.INGAME);
+        } catch (ResponseException e) {
+            System.out.println(e);
+        }
         return "Shall We Play A Game?";
     }
 

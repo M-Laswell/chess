@@ -1,4 +1,5 @@
 package server;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
@@ -7,6 +8,8 @@ import model.UserData;
 
 import java.io.*;
 import java.net.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ServerFacade {
     private final String serverUrl;
@@ -32,10 +35,23 @@ public class ServerFacade {
 
     public GameData[] listGames(AuthData auth) throws ResponseException {
         var path = "/game";
-        record listGameResponse(GameData[] game) {
+        record listGameResponse(GameData[] games) {
         }
         var response = this.makeRequest("GET", path, null, listGameResponse.class, auth);
-        return response.game;
+        return response.games;
+    }
+
+    public GameData createGame(AuthData auth, GameData gameData) throws ResponseException {
+        var path = "/game";
+        return this.makeRequest("POST", path, gameData, GameData.class, auth);
+    }
+
+    public GameData joinGame(AuthData auth, ChessGame.TeamColor color, int gameID) throws ResponseException {
+        var path = "/game";
+        Map<String,Object> game = new HashMap<>();
+        game.put("playerColor", color.toString());
+        game.put("gameID", gameID);
+        return this.makeRequest("PUT", path, game, GameData.class, auth);
     }
 
     private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass, AuthData authData) throws ResponseException {
