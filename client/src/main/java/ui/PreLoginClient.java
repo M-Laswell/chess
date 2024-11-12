@@ -1,14 +1,21 @@
 package ui;
 
+import exception.ResponseException;
+import model.UserData;
+import server.ServerFacade;
+
 import java.util.Arrays;
 
 public class PreLoginClient implements Client{
     //private final ServerFacade server;
     private final String serverUrl;
+    private final Repl repl;
+    private ServerFacade server;
 
-    public PreLoginClient(String serverUrl) {
+    public PreLoginClient(String serverUrl, Repl repl) {
         //server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+        this.repl = repl;
     }
 
     @Override
@@ -29,10 +36,26 @@ public class PreLoginClient implements Client{
     }
 
     private String login(String username, String password){
+        UserData data = new UserData(username, password ,null);
+        server = new ServerFacade(this.serverUrl);
+        try {
+            System.out.println(server.login(data));
+        } catch (ResponseException e) {
+            System.out.println(e);
+        }
+        this.repl.changeState(State.SIGNEDIN);
         return "Logging In";
     }
 
-    private String register(String username, String email, String paswword){
+    private String register(String username, String email, String password){
+        UserData data = new UserData(username, password ,email);
+        server = new ServerFacade(this.serverUrl);
+        try {
+            server.register(data);
+        } catch (ResponseException e) {
+            System.out.println(e);
+        }
+        this.repl.changeState(State.SIGNEDIN);
         return "Registering Offender";
     }
 
@@ -45,4 +68,5 @@ public class PreLoginClient implements Client{
                     - register <username> <email> <password> - registers a new user
                     """;
     }
+
 }

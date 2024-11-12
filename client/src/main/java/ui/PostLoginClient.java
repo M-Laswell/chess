@@ -8,10 +8,12 @@ import static java.lang.String.valueOf;
 
 public class PostLoginClient implements Client{
     private final String serverUrl;
+    private final Repl repl;
 
-    public PostLoginClient(String serverUrl) {
+    public PostLoginClient(String serverUrl, Repl repl) {
         //server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+        this.repl = repl;
     }
 
     @Override
@@ -34,6 +36,7 @@ public class PostLoginClient implements Client{
         }
     }
     private String logout(){
+        this.repl.changeState(State.SIGNEDOUT);
         return "Logging Out";
     }
     private String createGame(String gameName){
@@ -45,10 +48,12 @@ public class PostLoginClient implements Client{
     }
 
     private String playGame(String gameID, ChessGame.TeamColor teamColor){
+        this.repl.changeState(State.INGAME);
         return "Shall We Play A Game?";
     }
 
     private String observeGame(String gameID){
+        this.repl.changeState(State.OBSERVING);
         return "Observing Game";
     }
 

@@ -8,12 +8,14 @@ public class Repl{
     private final PostLoginClient postLoginClient;
     private final GameplayClient gameplayClient;
     private Client client;
+    private State state;
 
     public Repl(String serverUrl) {
-        preLoginClient = new PreLoginClient(serverUrl);
-        postLoginClient = new PostLoginClient(serverUrl);
-        gameplayClient = new GameplayClient(serverUrl);
-        client = postLoginClient;
+        preLoginClient = new PreLoginClient(serverUrl, this);
+        postLoginClient = new PostLoginClient(serverUrl, this);
+        gameplayClient = new GameplayClient(serverUrl, this);
+        client = preLoginClient;
+        state = State.SIGNEDOUT;
     }
 
     public void run() {
@@ -41,4 +43,15 @@ public class Repl{
     private void printPrompt() {
         System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
     }
+
+    public void changeState(State newState) {
+        this.state = newState;
+        switch (newState) {
+            case State.SIGNEDIN -> this.client = postLoginClient;
+            case State.SIGNEDOUT -> this.client = preLoginClient;
+            case State.INGAME, State.OBSERVING -> this.client = gameplayClient;
+            default -> this.client = postLoginClient;
+        } ;
+    }
+
 }

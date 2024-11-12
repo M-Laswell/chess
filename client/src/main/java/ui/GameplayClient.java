@@ -2,10 +2,12 @@ package ui;
 
 public class GameplayClient implements Client{
     private final String serverUrl;
+    private final Repl repl;
 
-    public GameplayClient(String serverUrl) {
+    public GameplayClient(String serverUrl, Repl repl) {
         //server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
+        this.repl = repl;
     }
 
     @Override
