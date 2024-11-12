@@ -4,6 +4,8 @@ import chess.ChessGame;
 
 import java.util.Arrays;
 
+import static java.lang.String.valueOf;
+
 public class PostLoginClient implements Client{
     private final String serverUrl;
 
@@ -22,7 +24,7 @@ public class PostLoginClient implements Client{
                 case "logout" -> logout();
                 case "creategame" -> createGame(params[0]);
                 case "listgames" -> listGames();
-                case "playgame" -> playGame(params[0], ChessGame.TeamColor.valueOf(params[1]));
+                case "playgame" -> playGame(params[0], params[1]);
                 case "observegame" -> observeGame(params[0]);
                 case "quit", "q" -> "quit";
                 default -> help();
@@ -42,7 +44,7 @@ public class PostLoginClient implements Client{
         return "List Games";
     }
 
-    private String playGame(String gameID, ChessGame.TeamColor teamColor){
+    private String playGame(String gameID, String teamColor){
         return "Shall We Play A Game?";
     }
 
