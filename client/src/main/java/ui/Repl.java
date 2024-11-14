@@ -35,8 +35,8 @@ public class Repl{
             printPrompt();
             if (state == State.INGAME || state == State.OBSERVING){
                 System.out.print(client.help());
+                printPrompt();
             }
-            printPrompt();
             String line = scanner.nextLine();
 
             try {
