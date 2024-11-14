@@ -50,9 +50,11 @@ public class PostLoginClient implements Client{
                 case "failure: 403" -> "Tried to join a taken color please try again with an OPEN color " +
                         "or listgames again for an updated list";
                 case "Connection refused: connect" -> "Our Servers are currently down";
-                case "Invalid Game Number" -> "Please select an existing game number or listgames again for an updated list";
+                case "Invalid Game Number" -> "Please select an existing game number " +
+                        "or listgames again for an updated list";
                 case "failure: 401" -> "You are unauthorized please leave";
-                default -> e.getMessage();
+                default -> "OOPS something went wrong please try again " +
+                        "if problem persists please restart the client";
             };
         }
     }
