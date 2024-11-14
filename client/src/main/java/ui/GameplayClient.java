@@ -14,7 +14,7 @@ public class GameplayClient implements Client{
     private final Repl repl;
     public GameData chessGame;
     private ChessBoard tempBoard = new ChessBoard();
-    private Boolean flipBoard = false;
+    private Boolean flipBoard = true;
 
 
     public GameplayClient(String serverUrl, Repl repl) {
@@ -49,7 +49,7 @@ public class GameplayClient implements Client{
         StringBuilder stringBuilder = new StringBuilder();
         if(flipBoard) {
             for (int i = 0; i < board.length; i++) {
-                for (int j = 0; j < board.length; j++) {
+                for (int j = board.length - 1; j >= 0; j--) {
                     String pieceRepresentation = EMPTY;
                     ChessPiece piece = board[i][j];
                     this.setBackGroundColor(stringBuilder, i, j, board);
@@ -63,7 +63,7 @@ public class GameplayClient implements Client{
             }
         } else {
             for (int i = board.length - 1; i >= 0; i--) {
-                for (int j = board.length - 1; j >= 0; j--) {
+                for (int j = 0; j < board.length; j++) {
                     String pieceRepresentation = EMPTY;
                     ChessPiece piece = board[i][j];
                     setBackGroundColor(stringBuilder, i, j, board);
@@ -82,14 +82,14 @@ public class GameplayClient implements Client{
 
     private String getLetter(int numberEquivalent){
         return switch (numberEquivalent) {
-            case 1 -> "H";
-            case 2 -> "G";
-            case 3 -> "F";
-            case 4 -> "E";
-            case 5 -> "D";
-            case 6 -> "C";
-            case 7 -> "B";
-            case 8 -> "A";
+            case 1 -> "A";
+            case 2 -> "B";
+            case 3 -> "C";
+            case 4 -> "D";
+            case 5 -> "E";
+            case 6 -> "F";
+            case 7 -> "G";
+            case 8 -> "H";
             default -> throw new RuntimeException(" ");
         };
     }
@@ -98,11 +98,11 @@ public class GameplayClient implements Client{
         if(j == 0 || j == board.length-1 || i == 0 || i == board.length-1){
             stringBuilder.append(SET_BG_COLOR_DARK_GREY);
         } else if (j % 2 == 1 && i % 2 == 0) {
-            stringBuilder.append(SET_BG_COLOR_DARK_GREEN);
-        } else if (j % 2 == 0 && i % 2 == 1) {
-            stringBuilder.append(SET_BG_COLOR_DARK_GREEN);
-        } else {
             stringBuilder.append(SET_BG_COLOR_LIGHT_GREY);
+        } else if (j % 2 == 0 && i % 2 == 1) {
+            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY);
+        } else {
+            stringBuilder.append(SET_BG_COLOR_DARK_GREEN);
         }
         return stringBuilder;
     }
