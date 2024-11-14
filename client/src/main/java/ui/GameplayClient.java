@@ -98,11 +98,11 @@ public class GameplayClient implements Client{
         if(j == 0 || j == board.length-1 || i == 0 || i == board.length-1){
             stringBuilder.append(SET_BG_COLOR_DARK_GREY);
         } else if (j % 2 == 1 && i % 2 == 0) {
-            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY);
-        } else if (j % 2 == 0 && i % 2 == 1) {
-            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY);
-        } else {
             stringBuilder.append(SET_BG_COLOR_DARK_GREEN);
+        } else if (j % 2 == 0 && i % 2 == 1) {
+            stringBuilder.append(SET_BG_COLOR_DARK_GREEN);
+        } else {
+            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY);
         }
         return stringBuilder;
     }
