@@ -8,13 +8,11 @@ import server.ServerFacade;
 import java.util.Arrays;
 
 public class PreLoginClient implements Client{
-    //private final ServerFacade server;
     private final String serverUrl;
     private final Repl repl;
     private ServerFacade server;
 
     public PreLoginClient(String serverUrl, Repl repl) {
-        //server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.repl = repl;
     }
@@ -26,7 +24,7 @@ public class PreLoginClient implements Client{
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
-                case "login" -> login(params[0], params[1]);
+                case "login", "l" -> login(params[0], params[1]);
                 case "register" -> register(params[0], params[1], params[2]);
                 case "quit", "q" -> "quit";
                 default -> help();

@@ -1,16 +1,10 @@
 package ui;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import exception.ResponseException;
 import model.GameData;
 import server.ServerFacade;
-
 import java.util.Arrays;
-import java.util.Map;
-
-import static java.lang.String.valueOf;
 
 public class PostLoginClient implements Client{
     private final String serverUrl;
@@ -18,7 +12,6 @@ public class PostLoginClient implements Client{
     private final Repl repl;
 
     public PostLoginClient(String serverUrl, Repl repl) {
-        //server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.repl = repl;
     }
@@ -34,7 +27,7 @@ public class PostLoginClient implements Client{
                 case "creategame" -> createGame(params[0]);
                 case "listgames" -> listGames();
                 case "playgame" -> playGame(Integer.parseInt(params[0]), ChessGame.TeamColor.valueOf(params[1].toUpperCase()));
-                case "observegame" -> observeGame(params[0]);
+                case "observegame", "o" -> observeGame(params[0]);
                 case "quit", "q" -> "quit";
                 default -> help();
             };
