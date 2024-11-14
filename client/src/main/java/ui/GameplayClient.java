@@ -31,6 +31,7 @@ public class GameplayClient implements Client{
             return switch (cmd) {
                 case "help" -> help();
                 case "quit", "q" -> "quit";
+                case "b" -> backToMenu();
                 default -> "In Game " + chessGame.getGameName() + "\n\n" +
                         generateChessboard(flipBoard) + "\n\n" + generateChessboard(!flipBoard);
             };
@@ -149,6 +150,11 @@ public class GameplayClient implements Client{
     public void setChessGame(GameData chessGame) {
         this.chessGame = chessGame;
         tempBoard.resetBoard();
+    }
+
+    private String backToMenu(){
+        this.repl.changeState(State.SIGNEDIN);
+        return "Welcome Back";
     }
 
     @Override

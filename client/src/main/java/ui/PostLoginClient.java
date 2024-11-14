@@ -33,17 +33,32 @@ public class PostLoginClient implements Client{
                 case "quit", "q" -> "quit";
                 default -> help();
             };
+        } catch (IllegalArgumentException e){
+
+            if(e.getMessage().contains("No enum constant")){
+                return "Please enter BLACK or WHITE as your color";
+
+            } else if (e.getMessage().contains("For input string")){
+                return "Please select an existing game number or listgames again for an updated list";
+            } else {
+                return "Command formatted incorrectly, please try again";
+            }
+        } catch (IndexOutOfBoundsException e) {
+            return "Command formatted incorrectly, please try again";
         } catch (Exception e) {
             return switch (e.getMessage()) {
+                case "failure: 403" -> "Tried to join a taken color please try again with an OPEN color " +
+                        "or listgames again for an updated list";
                 case "Connection refused: connect" -> "Our Servers are currently down";
-                default -> "You have not entered a valid command";
+                case "Invalid Game Number" -> "Please select an existing game number or listgames again for an updated list";
+                case "failure: 401" -> "You are unauthorized please leave";
+                default -> e.getMessage();
             };
         }
     }
     private String logout() throws Exception{
         server = new ServerFacade(this.serverUrl);
         try {
-            System.out.println(this.repl.getAuthData());
             server.logout(this.repl.getAuthData());
             this.repl.changeState(State.SIGNEDOUT);
             return "Logged out";
@@ -104,15 +119,26 @@ public class PostLoginClient implements Client{
             this.repl.changeState(State.INGAME);
             this.repl.joiningGame(games[gameNumber-1]);
             return "Joining Game #" + gameNumber;
-        } catch (ResponseException e) {
+        } catch (IndexOutOfBoundsException e) {
+            throw new Exception("Invalid Game Number");
+        } catch (Exception e) {
             throw e;
         }
     }
 
     private String observeGame(int gameNumber) throws Exception{
-        this.repl.changeState(State.OBSERVING);
-        this.repl.joiningGame(games[gameNumber-1]);
-        return "Observing Game #" + gameNumber;
+        try {
+            if(games[gameNumber - 1] == null){
+                throw new Exception("Invalid Game Number");
+            }
+            this.repl.changeState(State.OBSERVING);
+            this.repl.joiningGame(games[gameNumber - 1]);
+            return "Observing Game #" + gameNumber;
+        } catch (IndexOutOfBoundsException e) {
+            throw new Exception("Invalid Game Number");
+        } catch (Exception e){
+            throw e;
+        }
     }
 
     @Override

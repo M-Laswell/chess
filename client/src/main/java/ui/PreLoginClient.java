@@ -32,7 +32,9 @@ public class PreLoginClient implements Client{
         } catch (Exception e) {
             return switch (e.getMessage()) {
                 case "Connection refused: connect" -> "Our Servers are currently down";
-                default -> "You have not entered a valid command";
+                case "failure: 403" -> "Username already taken choose a different one";
+                case "failure: 401" -> "Incorrect Username or Password are you sure you registered?";
+                default -> "Command formatted incorrectly, please try again";
             };
         }
     }
