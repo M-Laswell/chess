@@ -41,11 +41,12 @@ public class PreLoginClient implements Client{
             AuthData auth = server.login(data);
             this.repl.setAuthData(auth);
             this.repl.changeState(State.SIGNEDIN);
+            return "Logged in as " + username;
         } catch (ResponseException e) {
             System.out.println(e);
         }
 
-        return "Logging In";
+        return "Log in failed please check your user details ";
     }
 
     private String register(String username, String email, String password){
@@ -55,10 +56,11 @@ public class PreLoginClient implements Client{
             AuthData auth = server.register(data);
             this.repl.setAuthData(auth);
             this.repl.changeState(State.SIGNEDIN);
+            return "Logged in as " + username;
         } catch (ResponseException e) {
             System.out.println(e);
         }
-        return "Registering Offender";
+        return "User registration failed due to an unknown error";
     }
 
     @Override

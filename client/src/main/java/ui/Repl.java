@@ -51,11 +51,16 @@ public class Repl{
     public void changeState(State newState) {
         this.state = newState;
         switch (newState) {
-            case State.SIGNEDIN -> this.client = postLoginClient;
+            case State.SIGNEDIN -> loggedIn();
             case State.SIGNEDOUT -> this.client = preLoginClient;
             case State.INGAME, State.OBSERVING -> this.client = gameplayClient;
             default -> this.client = postLoginClient;
         } ;
+    }
+
+    private void loggedIn(){
+        this.client = postLoginClient;
+        this.postLoginClient.loadGames();
     }
 
     public AuthData getAuthData() {

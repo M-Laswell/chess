@@ -10,6 +10,7 @@ public class PostLoginClient implements Client{
     private final String serverUrl;
     private ServerFacade server;
     private final Repl repl;
+    private GameData[] games;
 
     public PostLoginClient(String serverUrl, Repl repl) {
         this.serverUrl = serverUrl;
@@ -48,46 +49,64 @@ public class PostLoginClient implements Client{
     }
     private String createGame(String gameName){
         server = new ServerFacade(this.serverUrl);
-        GameData newGame = new GameData(0, null, null, gameName, null);
         try {
+            GameData newGame = new GameData(0, null, null, gameName, null);
             server.createGame(this.repl.getAuthData(), newGame);
+            return "Created game " + gameName;
+
         } catch (ResponseException e) {
             System.out.println(e);
         }
-        return "Create Game";
+        return "Tried to create game " + gameName + "but failed";
     }
 
-    private String listGames(){
+    public void loadGames(){
         server = new ServerFacade(this.serverUrl);
-        try {
-            var games = server.listGames(this.repl.getAuthData());
-            for(GameData game : games){
-                System.out.print(" Game ID: " + game.getGameID());
-                System.out.print("\t Game Name: " + game.getGameName());
-                System.out.print("\t White Player: " + game.getWhiteUsername());
-                System.out.println("\t Black Player: " + game.getBlackUsername());
+        try{
+            this.games = server.listGames(this.repl.getAuthData());
+        } catch (Exception e){
+            System.out.println("Error Loading Games");
+        }
+    }
+
+    private String listGames() {
+        loadGames();
+        StringBuilder gamesList = new StringBuilder();
+        for (int i = 0; i < this.games.length; i++) {
+            GameData game = this.games[i];
+            int gameNumber = i + 1;
+            String whitePlayer = "OPEN";
+            String blackPlayer = "OPEN";
+            if (game.getWhiteUsername() != null) {
+                whitePlayer = game.getWhiteUsername();
             }
-
-        } catch (ResponseException e) {
-            System.out.println(e);
+            if (game.getBlackUsername() != null) {
+                blackPlayer = game.getBlackUsername();
+            }
+            gamesList.append(" Game #: " + gameNumber);
+            gamesList.append("\t Game Name: " + game.getGameName());
+            gamesList.append("\t White Player: " + whitePlayer);
+            gamesList.append("\t\t Black Player: " + blackPlayer);
+            gamesList.append("\n");
         }
-        return "List Games";
+        return gamesList.toString();
     }
 
-    private String playGame(int gameID, ChessGame.TeamColor teamColor){
+    private String playGame(int gameNumber, ChessGame.TeamColor teamColor){
         server = new ServerFacade(this.serverUrl);
         try {
-            server.joinGame(this.repl.getAuthData(), teamColor, gameID);
+            server.joinGame(this.repl.getAuthData(), teamColor, games[gameNumber-1].getGameID());
             this.repl.changeState(State.INGAME);
+            return "Joining Game #" + gameNumber;
         } catch (ResponseException e) {
             System.out.println(e);
         }
-        return "Shall We Play A Game?";
+        return "Failed to join Game # " + gameNumber;
     }
 
     private String observeGame(String gameID){
         this.repl.changeState(State.OBSERVING);
-        return "Observing Game";
+        return "Observing Game #" + gameID;
     }
 
     @Override
