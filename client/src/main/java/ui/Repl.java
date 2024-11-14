@@ -12,6 +12,7 @@ public class Repl{
     private final PostLoginClient postLoginClient;
     private final GameplayClient gameplayClient;
     private Client client;
+    private Client gameplayClient1;
     private State state;
     private AuthData authData;
 
@@ -20,6 +21,7 @@ public class Repl{
         postLoginClient = new PostLoginClient(serverUrl, this);
         gameplayClient = new GameplayClient(serverUrl, this);
         client = preLoginClient;
+        gameplayClient1 = gameplayClient;
         state = State.SIGNEDOUT;
     }
 
@@ -30,6 +32,10 @@ public class Repl{
         Scanner scanner = new Scanner(System.in);
         var result = "";
         while (!result.equals("quit")) {
+            printPrompt();
+            if (state == State.INGAME || state == State.OBSERVING){
+                System.out.print(client.help());
+            }
             printPrompt();
             String line = scanner.nextLine();
 

@@ -32,12 +32,16 @@ public class GameplayClient implements Client{
                 case "help" -> help();
                 case "quit", "q" -> "quit";
                 case "b" -> backToMenu();
-                default -> "In Game " + chessGame.getGameName() + "\n\n" +
-                        generateChessboard(flipBoard) + "\n\n" + generateChessboard(!flipBoard);
+                default -> printChessboard();
             };
         } catch (Exception e) {
             return e.getMessage();
         }
+    }
+
+    public String printChessboard() {
+        return "In Game " + chessGame.getGameName() + "\n\n" +
+                generateChessboard(flipBoard) + "\n\n" + generateChessboard(!flipBoard);
     }
 
     private String generateChessboard(boolean flipBoard){
@@ -94,11 +98,11 @@ public class GameplayClient implements Client{
         if(j == 0 || j == board.length-1 || i == 0 || i == board.length-1){
             stringBuilder.append(SET_BG_COLOR_DARK_GREY);
         } else if (j % 2 == 1 && i % 2 == 0) {
-            stringBuilder.append(SET_BG_COLOR_DARK_GREEN);
-        } else if (j % 2 == 0 && i % 2 == 1) {
-            stringBuilder.append(SET_BG_COLOR_DARK_GREEN);
-        } else {
             stringBuilder.append(SET_BG_COLOR_LIGHT_GREY);
+        } else if (j % 2 == 0 && i % 2 == 1) {
+            stringBuilder.append(SET_BG_COLOR_LIGHT_GREY);
+        } else {
+            stringBuilder.append(SET_BG_COLOR_DARK_GREEN);
         }
         return stringBuilder;
     }
@@ -159,10 +163,6 @@ public class GameplayClient implements Client{
 
     @Override
     public String help() {
-        return """
-                - help - lists all possible commands
-                - quit - ends the client
-                - anything else - prints chess board
-                """;
+        return printChessboard();
     }
 }
