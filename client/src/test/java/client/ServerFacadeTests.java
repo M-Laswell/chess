@@ -1,6 +1,9 @@
 package client;
 
+import chess.ChessGame;
 import exception.ResponseException;
+import model.AuthData;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -29,7 +32,7 @@ public class ServerFacadeTests {
         server.stop();
     }
 
-    @AfterEach
+    @BeforeEach @AfterEach
     void clearServer() throws Exception{
         facade.clearApplication();
     }
@@ -51,16 +54,18 @@ public class ServerFacadeTests {
     @Test
     void login() throws Exception {
         UserData data = new UserData("username", "password" ,"email@email.org");
-        var authData = facade.register(data);
+        facade.register(data);
+        var authData = facade.login(data);
         assertTrue(authData.getAuthToken().length() > 10);
 
     }
 
     @Test
     void badLogin() throws Exception {
+        UserData goodData = new UserData("username", "password" ,"email@email.org");
         UserData data = new UserData("username", null ,"email9@email.org");
-        //var authData = facade.register(data);
-        assertThrows(ResponseException.class ,() -> facade.register(data));
+        facade.register(goodData);
+        assertThrows(ResponseException.class ,() -> facade.login(data));
 
     }
 
@@ -68,15 +73,16 @@ public class ServerFacadeTests {
     void logout() throws Exception {
         UserData data = new UserData("username", "password" ,"email@email.org");
         var authData = facade.register(data);
-        assertTrue(authData.getAuthToken().length() > 10);
+        assertDoesNotThrow(() -> facade.logout(authData));
 
     }
 
     @Test
     void badLogout() throws Exception {
-        UserData data = new UserData("username", null ,"email9@email.org");
-        //var authData = facade.register(data);
-        assertThrows(ResponseException.class ,() -> facade.register(data));
+        UserData data = new UserData("username", "password" ,"email@email.org");
+        var authData = facade.register(data);
+        AuthData badAuthData = null;
+        assertThrows(ResponseException.class ,() -> facade.logout(badAuthData));
 
     }
 
@@ -84,31 +90,33 @@ public class ServerFacadeTests {
     void listGames() throws Exception {
         UserData data = new UserData("username", "password" ,"email@email.org");
         var authData = facade.register(data);
-        assertTrue(authData.getAuthToken().length() > 10);
-
+        assertDoesNotThrow(() -> facade.listGames(authData));
     }
 
     @Test
     void badListGames() throws Exception {
-        UserData data = new UserData("username", null ,"email9@email.org");
-        //var authData = facade.register(data);
-        assertThrows(ResponseException.class ,() -> facade.register(data));
-
+        UserData data = new UserData("username", "password" ,"email@email.org");
+        var authData = facade.register(data);
+        AuthData badAuthData = null;
+        assertThrows(ResponseException.class ,() -> facade.listGames(badAuthData));
     }
 
     @Test
     void createGame() throws Exception {
         UserData data = new UserData("username", "password" ,"email@email.org");
         var authData = facade.register(data);
-        assertTrue(authData.getAuthToken().length() > 10);
-
+        GameData newGame = new GameData(1, null, null, "wild wild west", null);
+        assertDoesNotThrow(() -> facade.createGame(authData, newGame));
     }
 
     @Test
     void badCreateGame() throws Exception {
-        UserData data = new UserData("username", null ,"email9@email.org");
-        //var authData = facade.register(data);
-        assertThrows(ResponseException.class ,() -> facade.register(data));
+        UserData data = new UserData("username", "password" ,"email9@email.org");
+        var authData = facade.register(data);
+        GameData newGame = new GameData(1, null, null, "wild wild west", null);
+        facade.createGame(authData, newGame);
+        GameData newGame2 = new GameData(1, null, null, "wild wild west", null);
+        assertThrows(ResponseException.class ,() -> facade.createGame(authData, newGame2));
 
     }
 
@@ -116,16 +124,18 @@ public class ServerFacadeTests {
     void joinGame() throws Exception {
         UserData data = new UserData("username", "password" ,"email@email.org");
         var authData = facade.register(data);
-        assertTrue(authData.getAuthToken().length() > 10);
-
+        GameData newGame = new GameData(1, null, null, "wild wild west", null);
+        facade.createGame(authData, newGame);
+        assertDoesNotThrow(() -> facade.joinGame(authData, ChessGame.TeamColor.WHITE, 1));
     }
 
     @Test
     void badJoinGame() throws Exception {
-        UserData data = new UserData("username", null ,"email9@email.org");
-        //var authData = facade.register(data);
-        assertThrows(ResponseException.class ,() -> facade.register(data));
-
+        UserData data = new UserData("username", "password" ,"email9@email.org");
+        var authData = facade.register(data);
+        GameData newGame = new GameData(1, null, null, "wild wild west", null);
+        facade.createGame(authData, newGame);
+        assertThrows(ResponseException.class ,() -> facade.joinGame(authData, ChessGame.TeamColor.WHITE, 10));
     }
 
 

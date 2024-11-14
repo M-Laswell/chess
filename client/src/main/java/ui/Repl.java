@@ -1,6 +1,8 @@
 package ui;
 
+import chess.ChessGame;
 import model.AuthData;
+import model.GameData;
 
 import static ui.EscapeSequences.*;
 import java.util.Scanner;
@@ -58,9 +60,17 @@ public class Repl{
         } ;
     }
 
-    private void loggedIn(){
+    private void loggedIn() {
+        try{
         this.client = postLoginClient;
         this.postLoginClient.loadGames();
+        } catch (Exception e) {
+            System.out.println("There was an error loading the list of games");
+        }
+    }
+
+    public void joiningGame(GameData game){
+        this.gameplayClient.setChessGame(game);
     }
 
     public AuthData getAuthData() {

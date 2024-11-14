@@ -30,26 +30,27 @@ public class PreLoginClient implements Client{
                 default -> help();
             };
         } catch (Exception e) {
-            return e.getMessage();
+            return switch (e.getMessage()) {
+                case "Connection refused: connect" -> "Our Servers are currently down";
+                default -> "You have not entered a valid command";
+            };
         }
     }
 
-    private String login(String username, String password){
-        UserData data = new UserData(username, password ,null);
-        server = new ServerFacade(this.serverUrl);
+    private String login(String username, String password) throws Exception{
         try {
+            UserData data = new UserData(username, password ,null);
+            server = new ServerFacade(this.serverUrl);
             AuthData auth = server.login(data);
             this.repl.setAuthData(auth);
             this.repl.changeState(State.SIGNEDIN);
             return "Logged in as " + username;
         } catch (ResponseException e) {
-            System.out.println(e);
+            throw e;
         }
-
-        return "Log in failed please check your user details ";
     }
 
-    private String register(String username, String email, String password){
+    private String register(String username, String email, String password) throws Exception{
         UserData data = new UserData(username, password ,email);
         server = new ServerFacade(this.serverUrl);
         try {
@@ -58,9 +59,8 @@ public class PreLoginClient implements Client{
             this.repl.changeState(State.SIGNEDIN);
             return "Logged in as " + username;
         } catch (ResponseException e) {
-            System.out.println(e);
+            throw e;
         }
-        return "User registration failed due to an unknown error";
     }
 
     @Override

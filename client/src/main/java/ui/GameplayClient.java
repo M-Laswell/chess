@@ -3,6 +3,8 @@ package ui;
 import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
+import model.GameData;
+
 import static ui.EscapeSequences.*;
 
 import java.util.Arrays;
@@ -10,7 +12,8 @@ import java.util.Arrays;
 public class GameplayClient implements Client{
     private final String serverUrl;
     private final Repl repl;
-    private final ChessGame tempGame = new ChessGame();
+    public GameData chessGame;
+    private ChessBoard tempBoard = new ChessBoard();
     private Boolean flipBoard = false;
 
 
@@ -28,7 +31,8 @@ public class GameplayClient implements Client{
             return switch (cmd) {
                 case "help" -> help();
                 case "quit", "q" -> "quit";
-                default -> generateChessboard(flipBoard) + "\n\n" + generateChessboard(!flipBoard);
+                default -> "In Game " + chessGame.getGameName() + "\n\n" +
+                        generateChessboard(flipBoard) + "\n\n" + generateChessboard(!flipBoard);
             };
         } catch (Exception e) {
             return e.getMessage();
@@ -36,7 +40,7 @@ public class GameplayClient implements Client{
     }
 
     private String generateChessboard(boolean flipBoard){
-        ChessPiece[][] board = this.tempGame.getBoard().getChessBoard();
+        ChessPiece[][] board = this.tempBoard.getChessBoard();
         StringBuilder stringBuilder = new StringBuilder();
         if(flipBoard) {
             for (int i = 0; i < board.length; i++) {
@@ -81,7 +85,7 @@ public class GameplayClient implements Client{
             case 6 -> "C";
             case 7 -> "B";
             case 8 -> "A";
-            default -> throw new RuntimeException("What the flip? ;)");
+            default -> throw new RuntimeException(" ");
         };
     }
 
@@ -103,10 +107,12 @@ public class GameplayClient implements Client{
             pieceRepresentation = "\u2001" + this.getLetter(j) + SKINNY_SPACE +"\u2004";
         }
         if ((j == 0) && (i != 0 && i != board.length -1)){
-            pieceRepresentation = "\u200a\u200a\u200a\u200a\u200a\u200a\u200a" + String.valueOf(i) + "\u200a\u200a\u200a\u200a\u200a\u200a";
+            pieceRepresentation = "\u200a\u200a\u200a\u200a\u200a\u200a\u200a" +
+                    String.valueOf(i) + "\u200a\u200a\u200a\u200a\u200a\u200a";
         }
         if ((j == board.length - 1) && (i != 0 && i != board.length -1)){
-            pieceRepresentation = "\u200a\u200a\u200a\u200a\u200a\u200a" + String.valueOf(i) + "\u200a\u200a\u200a\u200a\u200a\u200a";
+            pieceRepresentation = "\u200a\u200a\u200a\u200a\u200a\u200a" +
+                    String.valueOf(i) + "\u200a\u200a\u200a\u200a\u200a\u200a";
         }
         return pieceRepresentation;
     }
@@ -122,7 +128,7 @@ public class GameplayClient implements Client{
                     case ChessPiece.PieceType.KNIGHT -> pieceRepresentation = WHITE_KNIGHT;
                     case ChessPiece.PieceType.ROOK -> pieceRepresentation = WHITE_ROOK;
                     case ChessPiece.PieceType.PAWN -> pieceRepresentation = WHITE_PAWN;
-                    default -> throw new RuntimeException("What the flip? ;)");
+                    default -> throw new RuntimeException(" ");
                 };
             } else {
                 stringBuilder.append(SET_TEXT_COLOR_BLACK);
@@ -133,13 +139,17 @@ public class GameplayClient implements Client{
                     case ChessPiece.PieceType.KNIGHT -> pieceRepresentation = BLACK_KNIGHT;
                     case ChessPiece.PieceType.ROOK -> pieceRepresentation = BLACK_ROOK;
                     case ChessPiece.PieceType.PAWN -> pieceRepresentation = BLACK_PAWN;
-                    default -> throw new RuntimeException("What the flip? ;)");
+                    default -> throw new RuntimeException(" ");
                 };
             }
         }
         return pieceRepresentation;
     }
 
+    public void setChessGame(GameData chessGame) {
+        this.chessGame = chessGame;
+        tempBoard.resetBoard();
+    }
 
     @Override
     public String help() {

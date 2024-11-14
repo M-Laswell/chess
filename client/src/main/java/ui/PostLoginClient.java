@@ -27,27 +27,32 @@ public class PostLoginClient implements Client{
                 case "logout" -> logout();
                 case "creategame" -> createGame(params[0]);
                 case "listgames" -> listGames();
-                case "playgame" -> playGame(Integer.parseInt(params[0]), ChessGame.TeamColor.valueOf(params[1].toUpperCase()));
-                case "observegame", "o" -> observeGame(params[0]);
+                case "playgame" -> playGame(Integer.parseInt(params[0]),
+                        ChessGame.TeamColor.valueOf(params[1].toUpperCase()));
+                case "observegame", "o" -> observeGame(Integer.parseInt(params[0]));
                 case "quit", "q" -> "quit";
                 default -> help();
             };
         } catch (Exception e) {
-            return e.getMessage();
+            return switch (e.getMessage()) {
+                case "Connection refused: connect" -> "Our Servers are currently down";
+                default -> "You have not entered a valid command";
+            };
         }
     }
-    private String logout(){
+    private String logout() throws Exception{
         server = new ServerFacade(this.serverUrl);
         try {
             System.out.println(this.repl.getAuthData());
             server.logout(this.repl.getAuthData());
             this.repl.changeState(State.SIGNEDOUT);
+            return "Logged out";
         } catch (ResponseException e) {
-            System.out.println(e);
+            throw e;
         }
-        return "Logging Out";
     }
-    private String createGame(String gameName){
+
+    private String createGame(String gameName) throws Exception{
         server = new ServerFacade(this.serverUrl);
         try {
             GameData newGame = new GameData(0, null, null, gameName, null);
@@ -55,21 +60,21 @@ public class PostLoginClient implements Client{
             return "Created game " + gameName;
 
         } catch (ResponseException e) {
-            System.out.println(e);
+            throw e;
         }
-        return "Tried to create game " + gameName + "but failed";
+
     }
 
-    public void loadGames(){
+    public void loadGames() throws Exception{
         server = new ServerFacade(this.serverUrl);
         try{
             this.games = server.listGames(this.repl.getAuthData());
         } catch (Exception e){
-            System.out.println("Error Loading Games");
+            throw e;
         }
     }
 
-    private String listGames() {
+    private String listGames() throws Exception{
         loadGames();
         StringBuilder gamesList = new StringBuilder();
         for (int i = 0; i < this.games.length; i++) {
@@ -92,21 +97,22 @@ public class PostLoginClient implements Client{
         return gamesList.toString();
     }
 
-    private String playGame(int gameNumber, ChessGame.TeamColor teamColor){
+    private String playGame(int gameNumber, ChessGame.TeamColor teamColor) throws  Exception{
         server = new ServerFacade(this.serverUrl);
         try {
             server.joinGame(this.repl.getAuthData(), teamColor, games[gameNumber-1].getGameID());
             this.repl.changeState(State.INGAME);
+            this.repl.joiningGame(games[gameNumber-1]);
             return "Joining Game #" + gameNumber;
         } catch (ResponseException e) {
-            System.out.println(e);
+            throw e;
         }
-        return "Failed to join Game # " + gameNumber;
     }
 
-    private String observeGame(String gameID){
+    private String observeGame(int gameNumber) throws Exception{
         this.repl.changeState(State.OBSERVING);
-        return "Observing Game #" + gameID;
+        this.repl.joiningGame(games[gameNumber-1]);
+        return "Observing Game #" + gameNumber;
     }
 
     @Override
