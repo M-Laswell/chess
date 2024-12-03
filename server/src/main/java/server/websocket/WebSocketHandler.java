@@ -57,7 +57,7 @@ public class WebSocketHandler {
         connections.broadcast(gameID, user.getUsername(), notification);
     }
 
-public void makeMove(Integer gameID, ChessMove move) throws ResponseException {                                                                                                                                 nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+public void makeMove(Integer gameID, ChessMove move) throws ResponseException {
         try {
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             connections.broadcast(gameID, "", notification);
