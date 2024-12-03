@@ -41,9 +41,9 @@ public class WebSocketHandler {
 
             switch (command.getCommandType()) {
                 case CONNECT -> connect(userData, command.getGameID(), session);
-                case MAKE_MOVE -> makeMove(command.getChessMove());
-                case LEAVE -> leave(userData);
-                case RESIGN -> resign(userData);
+                case MAKE_MOVE -> makeMove(command.getGameID(), command.getChessMove());
+                case LEAVE -> leave(command.getGameID(), userData);
+                case RESIGN -> resign(command.getGameID(), userData);
             }
 
         } catch (Exception e) {
@@ -54,28 +54,28 @@ public class WebSocketHandler {
     private void connect(AuthData user, Integer gameID, Session session) throws IOException {
         connections.add(user.getUsername(), gameID, session);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        connections.broadcast(user.getUsername(), notification);
+        connections.broadcast(gameID, user.getUsername(), notification);
     }
 
-public void makeMove(ChessMove move) throws ResponseException {                                                                                                                                 nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
+public void makeMove(Integer gameID, ChessMove move) throws ResponseException {                                                                                                                                 nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn
         try {
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            connections.broadcast("", notification);
+            connections.broadcast(gameID, "", notification);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }
     }
 
-    private void leave(AuthData user) throws IOException {
-        connections.remove(user.getUsername());
+    private void leave(Integer gameID, AuthData user) throws IOException {
+        connections.removeUser(user.getUsername(), gameID);
         var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-        connections.broadcast(user.getUsername(), notification);
+        connections.broadcast(gameID, user.getUsername(), notification);
     }
 
-    public void resign(AuthData user) throws ResponseException {
+    public void resign(Integer gameID, AuthData user) throws ResponseException {
         try {
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            connections.broadcast("", notification);
+            connections.broadcast(gameID,"", notification);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }

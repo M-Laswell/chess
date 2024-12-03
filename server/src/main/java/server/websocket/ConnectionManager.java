@@ -25,10 +25,9 @@ public class ConnectionManager {
         connections.get(gameID).removeIf(connection -> Objects.equals(connection.userName, userName));
     }
 
-    public void broadcast(String excludeVisitorName, ServerMessage notification) throws IOException {
+    public void broadcast(Integer gameId, String excludeVisitorName, ServerMessage notification) throws IOException {
         var removeList = new ArrayList<Connection>();
-        for (var game : connections.values()) {
-            for (var c: game) {
+            for (var c: connections.get(gameId)) {
                 if (c.session.isOpen()) {
                     if (!c.userName.equals(excludeVisitorName)) {
                         c.send(notification.toString());
@@ -36,7 +35,6 @@ public class ConnectionManager {
                 } else {
                     removeList.add(c);
                 }
-            }
         }
 
         // Clean up any connections that were left open.
