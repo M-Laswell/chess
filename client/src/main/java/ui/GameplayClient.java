@@ -4,7 +4,6 @@ import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
 import model.GameData;
-//intial commit for last part
 import static ui.EscapeSequences.*;
 
 import java.util.Arrays;
