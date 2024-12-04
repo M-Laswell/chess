@@ -48,7 +48,7 @@ public class GameplayClient implements Client{
                     case "redraw", "r" -> printChessboard();
                     case "leave", "b" -> leave();
                     case "quit", "q" -> quit();
-                    default -> printChessboard();
+                    default -> help();
                 };
             } else {
                 return switch (cmd) {
@@ -56,14 +56,31 @@ public class GameplayClient implements Client{
                     case "redraw", "r" -> printChessboard();
                     case "select", "s" -> help();
                     case "move", "m" -> help();
-                    case "resign", "res" -> help();
+                    case "resign", "res" -> resign();
                     case "leave", "b" -> leave();
                     case "quit", "q" -> quit();
-                    default -> printChessboard();
+                    default -> help();
                 };
             }
         } catch (Exception e) {
             return e.getMessage();
+        }
+    }
+    private String resign(){
+        try {
+            chessGame.getGame().setGameWon(true);
+            if (chessGame.getBlackUsername() != null && chessGame.getWhiteUsername() != null && chessGame.getBlackUsername().equals(repl.getAuthData().getUsername())) {
+                chessGame.getGame().setWinner(ChessGame.TeamColor.WHITE);
+                ws.resign(chessGame.getGameID(), repl.getAuthData().getAuthToken());
+                return "You have resigned";
+            } else {
+                chessGame.getGame().setWinner(ChessGame.TeamColor.BLACK);
+                ws.resign(chessGame.getGameID(), repl.getAuthData().getAuthToken());
+                return "You have resigned";
+            }
+        }catch (Exception e){
+            System.out.println(e);
+            return "An error has occured during your resignation";
         }
     }
 
@@ -220,8 +237,8 @@ public class GameplayClient implements Client{
             return """
                     - help - lists all possible commands
                     - redraw - draws the chessboard again
-                    - select <1-8> <A-H> - selects a piece a the indicated row and column to see its moves
-                    - move <1-8> <A-H> <1-8> <A-H>- moves the piece in the first row
+                    - select <A-H1-8> - selects a piece a the indicated row and column to see its moves
+                    - move <A-H1-8> <A-H1-8>- moves the piece in the first row
                         column selection to the second row and column selection
                     - leave - removes player from the game leaving their spot open
                     - resign - forfeits the match to the other player

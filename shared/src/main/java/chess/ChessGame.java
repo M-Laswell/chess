@@ -13,6 +13,8 @@ import java.util.Objects;
 public class ChessGame {
     TeamColor teamTurn;
     ChessBoard chessBoard = new ChessBoard();
+    boolean gameWon = false;
+    TeamColor winner = null;
 
     public ChessGame() {
         this.teamTurn = TeamColor.WHITE;
@@ -20,6 +22,22 @@ public class ChessGame {
 
 
 
+    }
+
+    public TeamColor getWinner() {
+        return winner;
+    }
+
+    public void setWinner(TeamColor winner) {
+        this.winner = winner;
+    }
+
+    public boolean isGameWon() {
+        return gameWon;
+    }
+
+    public void setGameWon(boolean gameWon) {
+        this.gameWon = gameWon;
     }
 
     /**
