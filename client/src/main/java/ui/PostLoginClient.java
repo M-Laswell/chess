@@ -4,17 +4,25 @@ import chess.ChessGame;
 import exception.ResponseException;
 import model.GameData;
 import server.ServerFacade;
+import websocket.WebSocketFacade;
+import websocket.NotificationHandler;
+
 import java.util.Arrays;
+
+import static com.sun.management.HotSpotDiagnosticMXBean.ThreadDumpFormat.JSON;
 
 public class PostLoginClient implements Client{
     private final String serverUrl;
     private ServerFacade server;
     private final Repl repl;
     private GameData[] games;
+    private WebSocketFacade ws;
+    private final NotificationHandler notificationHandler;
 
-    public PostLoginClient(String serverUrl, Repl repl) {
+    public PostLoginClient(String serverUrl, Repl repl, NotificationHandler notificationHandler) {
         this.serverUrl = serverUrl;
         this.repl = repl;
+        this.notificationHandler = notificationHandler;
     }
 
     @Override

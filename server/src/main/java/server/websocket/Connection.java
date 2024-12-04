@@ -1,6 +1,7 @@
 package server.websocket;
 
 import org.eclipse.jetty.websocket.api.Session;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 
@@ -16,6 +17,10 @@ public class Connection {
     }
 
     public void send(String msg) throws IOException {
-        session.getRemote().sendString(msg);
+        if (session.isOpen()) {
+            session.getRemote().sendString(msg);
+        } else {
+            System.out.println("Session is not open, message cannot be sent.");
+        }
     }
 }

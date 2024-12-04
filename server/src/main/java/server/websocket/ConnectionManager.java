@@ -8,13 +8,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import com.google.gson.Gson;
+
 
 public class ConnectionManager {
     public final ConcurrentHashMap<Integer, List<Connection>> connections = new ConcurrentHashMap<>();
 
-    public void add(String visitorName,Integer gameID, Session session) {
-        var connection = new Connection(visitorName, gameID, session);
-        connections.get(gameID).add(connection);
+    public void add(Connection connection) {
+        if(connections.get(connection.gameID) != null) {
+            connections.get(connection.gameID).add(connection);
+        } else {
+            ArrayList<Connection> conns = new ArrayList<>();
+            conns.add(connection);
+            connections.put(connection.gameID, conns);
+        }
     }
 
     public void removeGame(Integer gameID) {
@@ -30,7 +37,8 @@ public class ConnectionManager {
             for (var c: connections.get(gameId)) {
                 if (c.session.isOpen()) {
                     if (!c.userName.equals(excludeVisitorName)) {
-                        c.send(notification.toString());
+                        c.send(new Gson().toJson(notification));
+
                     }
                 } else {
                     removeList.add(c);

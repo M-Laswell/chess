@@ -70,6 +70,18 @@ public class GameService {
         gameDAO.updateGame(gameID, game);
     }
 
+    public void leaveGame(String token, Integer gameID) throws DataAccessException {
+        AuthData user = authService.authenticate(token);
+        GameData game = gameDAO.getGame(gameID);
+
+        if(user.getUsername().equals(game.getBlackUsername())){
+            game.setBlackUsername(null);
+        } else if(user.getUsername().equals(game.getWhiteUsername())) {
+            game.setWhiteUsername(null);
+        }
+        gameDAO.updateGame(gameID, game);
+    }
+
     public void clear() throws DataAccessException{
         gameDAO.clear();
     }

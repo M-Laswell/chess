@@ -3,11 +3,13 @@ package ui;
 import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
+import websocket.NotificationHandler;
+import websocket.messages.ServerMessage;
 
 import static ui.EscapeSequences.*;
 import java.util.Scanner;
 
-public class Repl{
+public class Repl implements NotificationHandler {
     private final PreLoginClient preLoginClient;
     private final PostLoginClient postLoginClient;
     private final GameplayClient gameplayClient;
@@ -18,7 +20,7 @@ public class Repl{
 
     public Repl(String serverUrl) {
         preLoginClient = new PreLoginClient(serverUrl, this);
-        postLoginClient = new PostLoginClient(serverUrl, this);
+        postLoginClient = new PostLoginClient(serverUrl, this, this);
         gameplayClient = new GameplayClient(serverUrl, this);
         client = preLoginClient;
         gameplayClient1 = gameplayClient;
@@ -77,6 +79,7 @@ public class Repl{
 
     public void joiningGame(GameData game){
         this.gameplayClient.setChessGame(game);
+        this.gameplayClient.upgradeToWebsocket();
     }
 
     public AuthData getAuthData() {
@@ -86,4 +89,22 @@ public class Repl{
     public void setAuthData(AuthData authData) {
         this.authData = authData;
     }
+
+    public State getState() {
+        return state;
+    }
+
+    @Override
+    public void notify(ServerMessage notification) {
+        String message = null;
+        switch(notification.getServerMessageType()){
+            case NOTIFICATION -> message = notification.getMessage();
+            case ERROR -> message = notification.getErrorMessage();
+            case LOAD_GAME -> message = notification.getServerMessageType().toString();
+            default -> message = "You fool How?";
+        }
+        System.out.println(SET_TEXT_COLOR_RED + message);
+        printPrompt();
+    }
+
 }

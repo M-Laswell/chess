@@ -3,7 +3,12 @@ package ui;
 import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
+import exception.ResponseException;
 import model.GameData;
+import websocket.NotificationHandler;
+import websocket.WebSocketFacade;
+import websocket.messages.ServerMessage;
+
 import static ui.EscapeSequences.*;
 
 import java.util.Arrays;
@@ -14,11 +19,21 @@ public class GameplayClient implements Client{
     public GameData chessGame;
     private ChessBoard tempBoard = new ChessBoard();
     private Boolean flipBoard = true;
+    private WebSocketFacade ws;
 
 
     public GameplayClient(String serverUrl, Repl repl) {
         this.serverUrl = serverUrl;
         this.repl = repl;
+    }
+
+    public void upgradeToWebsocket() {
+        try {
+            ws = new WebSocketFacade(serverUrl, repl);
+            ws.connectToGame(chessGame.getGameID(), repl.getAuthData().getAuthToken());
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 
     @Override
@@ -29,6 +44,11 @@ public class GameplayClient implements Client{
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "help" -> help();
+                case "redraw" -> help();
+                case "select" -> help();
+                case "move"  -> help();
+                case "resign" -> help();
+                case "leave" -> leave();
                 case "quit", "q" -> "quit";
                 case "b" -> backToMenu();
                 default -> printChessboard();
@@ -42,6 +62,7 @@ public class GameplayClient implements Client{
         return "In Game " + chessGame.getGameName() + "\n\n" +
                 generateChessboard(flipBoard) + "\n\n" + generateChessboard(!flipBoard);
     }
+
 
     private String generateChessboard(boolean flipBoard){
         ChessPiece[][] board = this.tempBoard.getChessBoard();
@@ -77,6 +98,16 @@ public class GameplayClient implements Client{
         }
       return stringBuilder.toString();
 
+    }
+
+    private String leave(){
+        try {
+            ws.leaveGame(chessGame.getGameID(), repl.getAuthData().getAuthToken());
+            return backToMenu();
+        } catch (Exception e){
+            System.out.println(e);
+        }
+        return "You couldn't Leave for some unknown reason";
     }
 
     private String getLetter(int numberEquivalent){
@@ -162,6 +193,24 @@ public class GameplayClient implements Client{
 
     @Override
     public String help() {
-        return printChessboard();
+        if (repl.getState().equals(State.OBSERVING)) {
+            return """
+                    - help - lists all possible commands
+                    - redraw - draws the chessboard again
+                    - leave - stop observing the game
+                    - quit - ends the client
+                    """;
+        } else {
+            return """
+                    - help - lists all possible commands
+                    - redraw - draws the chessboard again
+                    - select <1-8> <A-H> - selects a piece a the indicated row and column to see its moves
+                    - move <1-8> <A-H> <1-8> <A-H>- moves the piece in the first row
+                        column selection to the second row and column selection
+                    - leave - removes player from the game leaving their spot open
+                    - resign - forfeits the match to the other player
+                    - quit - ends the client
+                    """;
+        }
     }
 }
