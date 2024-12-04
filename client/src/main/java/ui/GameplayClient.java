@@ -42,25 +42,41 @@ public class GameplayClient implements Client{
             var tokens = command.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd) {
-                case "help" -> help();
-                case "redraw" -> help();
-                case "select" -> help();
-                case "move"  -> help();
-                case "resign" -> help();
-                case "leave" -> leave();
-                case "quit", "q" -> "quit";
-                case "b" -> backToMenu();
-                default -> printChessboard();
-            };
+            if(repl.getState() == State.OBSERVING) {
+                return switch (cmd) {
+                    case "help" -> help();
+                    case "redraw", "r" -> printChessboard();
+                    case "leave", "b" -> leave();
+                    case "quit", "q" -> quit();
+                    default -> printChessboard();
+                };
+            } else {
+                return switch (cmd) {
+                    case "help" -> help();
+                    case "redraw", "r" -> printChessboard();
+                    case "select", "s" -> help();
+                    case "move", "m" -> help();
+                    case "resign", "res" -> help();
+                    case "leave", "b" -> leave();
+                    case "quit", "q" -> quit();
+                    default -> printChessboard();
+                };
+            }
         } catch (Exception e) {
             return e.getMessage();
         }
     }
 
+    private String quit(){
+        leave();
+        return "quit";
+    }
+
     public String printChessboard() {
-        return "In Game " + chessGame.getGameName() + "\n\n" +
-                generateChessboard(flipBoard) + "\n\n" + generateChessboard(!flipBoard);
+        if(chessGame.getBlackUsername() != null && chessGame.getBlackUsername().equals(repl.getAuthData().getUsername())) {
+                return "In Game " + chessGame.getGameName() + "\n\n" + generateChessboard(flipBoard);
+        }
+        return "In Game " + chessGame.getGameName() + "\n\n" + generateChessboard(!flipBoard);
     }
 
 

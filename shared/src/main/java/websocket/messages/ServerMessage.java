@@ -1,5 +1,8 @@
 package websocket.messages;
 
+import chess.ChessGame;
+import model.GameData;
+
 import java.util.Objects;
 
 /**
@@ -12,6 +15,7 @@ public class ServerMessage {
     ServerMessageType serverMessageType;
     private String message = null;
     private String errorMessage = null;
+    private GameData game = null;
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -41,6 +45,14 @@ public class ServerMessage {
 
     public void setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;
+    }
+
+    public GameData getGame() {
+        return game;
+    }
+
+    public void setGame(GameData game) {
+        this.game = game;
     }
 
     @Override

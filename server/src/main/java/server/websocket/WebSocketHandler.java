@@ -68,6 +68,11 @@ public class WebSocketHandler {
             var connection = new Connection(user.getUsername(), gameID, session);
             connections.add(connection);
             var loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+            for(GameData game: gameService.getGames(user.getAuthToken())){
+                if(game.getGameID() == gameID){
+                    loadGame.setGame(game);
+                }
+            }
             connection.send(new Gson().toJson(loadGame));;
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
             String joinType = null;

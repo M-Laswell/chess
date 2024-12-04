@@ -100,11 +100,16 @@ public class Repl implements NotificationHandler {
         switch(notification.getServerMessageType()){
             case NOTIFICATION -> message = notification.getMessage();
             case ERROR -> message = notification.getErrorMessage();
-            case LOAD_GAME -> message = notification.getServerMessageType().toString();
+            case LOAD_GAME -> message = loadGame(notification);
             default -> message = "You fool How?";
         }
         System.out.println(SET_TEXT_COLOR_RED + message);
         printPrompt();
+    }
+
+    private String loadGame(ServerMessage notification){
+        this.gameplayClient.chessGame = notification.getGame();
+        return this.gameplayClient.printChessboard();
     }
 
 }
