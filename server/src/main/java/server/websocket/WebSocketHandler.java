@@ -51,7 +51,7 @@ public class WebSocketHandler {
                 case CONNECT -> connect(userData, command.getGameID(), session);
                 case MAKE_MOVE -> makeMove(command.getGameID(), command.getChessMove(), userData, session);
                 case LEAVE -> leave(command.getGameID(), userData);
-                case RESIGN -> resign(command.getGameID(), userData);
+                case RESIGN -> resign(command.getGameID(), userData, session);
             }
 
         } catch (Exception e) {
@@ -183,13 +183,36 @@ public class WebSocketHandler {
 
     //trust,autonomy,purpose,psychological safety key principles for building efficient productive organizations
 
-    public void resign(Integer gameID, AuthData user) throws ResponseException {
-        try {
-            var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            notification.setMessage(user.getUsername() + " has resigned");
-            connections.broadcast(gameID,user.getUsername(), notification);
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+    public void resign(Integer gameID, AuthData user, Session session) throws IOException, DataAccessException {
+        user = checkForUser(user,session);
+        boolean valid = false;
+        if(user != null) {
+            var connection = new Connection(user.getUsername(), gameID, session);
+            GameData game = checkForGame(gameID, session, user);
+            if (game != null) {
+                var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                if(user.getUsername().equals(game.getWhiteUsername()) &&
+                        game.getGame().getTeamTurn().equals(ChessGame.TeamColor.WHITE)){
+                        game.getGame().setWinner(ChessGame.TeamColor.BLACK);
+                        valid = true;
+                    }
+
+                } else if (user.getUsername().equals(game.getBlackUsername()) &&
+                        game.getGame().getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
+                        game.getGame().setWinner(ChessGame.TeamColor.WHITE);
+                        valid = true;
+            }
+                if(valid){
+                    game.getGame().setGameWon(true);
+                    gameService.updateGame(gameID,game);
+                    var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                    notification.setMessage(user.getUsername() + " has resigned");
+                    connections.broadcast(gameID,"", notification);
+                } else {
+                    var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                    error.setErrorMessage("You Can't Resign Foolish Mortal");
+                    session.getRemote().sendString(new Gson().toJson(error));
+            }
         }
     }
 
