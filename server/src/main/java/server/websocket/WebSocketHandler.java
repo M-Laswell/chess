@@ -123,7 +123,27 @@ public class WebSocketHandler {
         return null;
     }
 
+    private String convertColToLetter(Integer letter){
+        return switch(letter) {
+            case 1 -> "A";
+            case 2 -> "B";
+            case 3 -> "C";
+            case 4 -> "D";
+            case 5 -> "E";
+            case 6 -> "F";
+            case 7 -> "G";
+            case 8 -> "H";
+            default -> throw new RuntimeException(" ");
+        };
+    }
+
     public void makeMove(Integer gameID, ChessMove move, AuthData user, Session session) throws IOException, DataAccessException {
+        Integer startRow = move.getStartPosition().getRow();
+        Integer startCol = move.getStartPosition().getColumn();
+        Integer endRow = move.getEndPosition().getRow();
+        Integer endCol = move.getEndPosition().getColumn();
+        String startPos = convertColToLetter(startCol) + startRow;
+        String endPos = convertColToLetter(endCol) + endRow;
         user = checkForUser(user,session);
         boolean valid = false;
         try {
@@ -141,7 +161,7 @@ public class WebSocketHandler {
                     if (!game.getGame().isGameWon()) {
                         game.getGame().makeMove(move);
                         gameService.updateGame(gameID, game);
-                        notification.setMessage("White Moved");
+                        notification.setMessage(user.getUsername() + " moved from " + startPos + " to " + endPos);
                         //session.getRemote().sendString(new Gson().toJson(notification));
                         valid = true;
                     } else {
@@ -157,7 +177,7 @@ public class WebSocketHandler {
                     if (!game.getGame().isGameWon()) {
                         game.getGame().makeMove(move);
                         gameService.updateGame(gameID, game);
-                        notification.setMessage("Black Moved");
+                        notification.setMessage(user.getUsername() + " moved from " + startPos + " to " + endPos);
                         //session.getRemote().sendString(new Gson().toJson(notification));
                         valid = true;
                     } else {
@@ -178,19 +198,19 @@ public class WebSocketHandler {
                     game.getGame().setGameWon(true);
                     game.getGame().setWinner(ChessGame.TeamColor.WHITE);
                     gameService.updateGame(gameID, game);
-                    notification.setMessage("White has won the game through checkmate");
+                    notification.setMessage(game.getWhiteUsername() + " has won the game through checkmate");
                     connections.broadcast(gameID, "", notification);
                 } else if (game.getGame().isInCheckmate(ChessGame.TeamColor.WHITE)) {
                     game.getGame().setGameWon(true);
                     game.getGame().setWinner(ChessGame.TeamColor.BLACK);
                     gameService.updateGame(gameID, game);
-                    notification.setMessage("Black has won the game through checkmate");
+                    notification.setMessage( game.getBlackUsername() + " has won the game through checkmate");
                     connections.broadcast(gameID, "", notification);
                 } else if (game.getGame().isInCheck(ChessGame.TeamColor.BLACK)){
-                    notification.setMessage("Black is in check");
+                    notification.setMessage(game.getBlackUsername() + " is in check");
                     connections.broadcast(gameID, "", notification);
                 } else if (game.getGame().isInCheck(ChessGame.TeamColor.WHITE)) {
-                    notification.setMessage("White is in check");
+                    notification.setMessage(game.getWhiteUsername() + " is in check");
                     connections.broadcast(gameID, "", notification);
                 }
                 var loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);

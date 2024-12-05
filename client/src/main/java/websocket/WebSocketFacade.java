@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
-import websocket.NotificationHandler;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -58,7 +57,7 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    public void makeMove (Integer gameID, String authToken, ChessMove move) throws ResponseException {
+    public void makeMove (Integer gameID, String authToken, ChessMove move, String startingPosition, String endingPosition) throws ResponseException {
         try {
             var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID);
             command.setChessMove(move);

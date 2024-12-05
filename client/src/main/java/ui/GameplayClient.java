@@ -18,6 +18,8 @@ public class GameplayClient implements Client{
     public GameData chessGame;
     //private ChessBoard tempBoard = new ChessBoard();
     private Boolean flipBoard = true;
+    private Boolean resConfirmation = false;
+    private Boolean resConfirmed = false;
     private WebSocketFacade ws;
 
 
@@ -45,11 +47,19 @@ public class GameplayClient implements Client{
                 return switch (cmd) {
                     case "help" -> help();
                     case "redraw", "r" -> printChessboard(null);
+                    case "select", "s" -> select(params[0]);
                     case "leave", "b" -> leave();
                     case "quit", "q" -> quit();
                     default -> help();
                 };
-            } else {
+            } else if(resConfirmation) {
+                return switch (cmd) {
+                    case "y", "yes" -> confirmRes();
+                    case "no", "n" -> declineRes();
+                    case "quit", "q" -> quit();
+                    default -> help();
+                };
+            }else {
                 return switch (cmd) {
                     case "help" -> help();
                     case "redraw", "r" -> printChessboard(null);
@@ -65,16 +75,33 @@ public class GameplayClient implements Client{
             return e.getMessage();
         }
     }
+    private String confirmRes() throws ResponseException {
+        resConfirmation = false;
+        ws.resign(chessGame.getGameID(), repl.getAuthData().getAuthToken());
+        if (!chessGame.getGame().isGameWon()) {
+            return "You have resigned";
+        }
+        return"";
+    }
+    private String declineRes() throws ResponseException {
+        resConfirmation = false;
+        return "Resignation has been stopped";
+    }
     private String resign(){
         try {
             if (chessGame.getBlackUsername() != null && chessGame.getWhiteUsername() != null
                     && chessGame.getBlackUsername().equals(repl.getAuthData().getUsername())) {
-                ws.resign(chessGame.getGameID(), repl.getAuthData().getAuthToken());
-                return "You have resigned";
-            } else {
-                ws.resign(chessGame.getGameID(), repl.getAuthData().getAuthToken());
-                return "You have resigned";
+                if (!resConfirmation) {
+                    resConfirmation = true;
+                    return "Are you sure you want to resign?";
+                }
+                return "";
+
+            } else if (!resConfirmation){
+                resConfirmation = true;
+                return "Are you sure you want to resign?";
             }
+            return "";
         }catch (Exception e){
             System.out.println(e);
             return "An error has occured during your resignation";
@@ -266,7 +293,7 @@ public class GameplayClient implements Client{
             ChessPosition startPos = new ChessPosition(startRow, startCol);
             ChessPosition endPos = new ChessPosition(endRow, endCol);
             ChessMove move = new ChessMove(startPos, endPos, null);
-            ws.makeMove(chessGame.getGameID(), repl.getAuthData().getAuthToken(), move);
+            ws.makeMove(chessGame.getGameID(), repl.getAuthData().getAuthToken(), move, startingPosition, endingPosition);
 
         } catch (Exception e){
             return "Invalid Command";
@@ -281,6 +308,13 @@ public class GameplayClient implements Client{
                     - help - lists all possible commands
                     - redraw - draws the chessboard again
                     - leave - stop observing the game
+                    - quit - ends the client
+                    """;
+        } else if (resConfirmation) {
+            return """
+                    - help - lists all possible commands
+                    - yes - confirm resignation
+                    - no - stop resignation
                     - quit - ends the client
                     """;
         } else {
