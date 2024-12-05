@@ -3,6 +3,7 @@ package ui;
 import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
+import org.eclipse.jetty.server.Server;
 import websocket.NotificationHandler;
 import websocket.messages.ServerMessage;
 
@@ -94,13 +95,21 @@ public class Repl implements NotificationHandler {
     public void notify(ServerMessage notification) {
         String message = null;
         switch(notification.getServerMessageType()){
-            case NOTIFICATION -> message = notification.getMessage();
-            case ERROR -> message = notification.getErrorMessage();
+            case NOTIFICATION -> message = notifMessage(notification);
+            case ERROR -> message = errorMessage(notification);
             case LOAD_GAME -> message = loadGame(notification);
             default -> message = "You fool How?";
         }
-        System.out.println(SET_TEXT_COLOR_RED + message);
+        System.out.println(message);
         printPrompt();
+    }
+    public String errorMessage (ServerMessage notification){
+        String message = (SET_TEXT_COLOR_RED + notification.getErrorMessage());
+        return message;
+    }
+    public String notifMessage (ServerMessage notification){
+        String message = (SET_TEXT_COLOR_BLUE + notification.getMessage());
+        return message;
     }
 
     private String loadGame(ServerMessage notification){

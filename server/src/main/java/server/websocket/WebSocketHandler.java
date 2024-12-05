@@ -178,14 +178,19 @@ public class WebSocketHandler {
                     game.getGame().setGameWon(true);
                     game.getGame().setWinner(ChessGame.TeamColor.WHITE);
                     gameService.updateGame(gameID, game);
-                    notification.setMessage("White has won the game");
+                    notification.setMessage("White has won the game through checkmate");
                     connections.broadcast(gameID, "", notification);
-                }
-                if (game.getGame().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                } else if (game.getGame().isInCheckmate(ChessGame.TeamColor.WHITE)) {
                     game.getGame().setGameWon(true);
                     game.getGame().setWinner(ChessGame.TeamColor.BLACK);
                     gameService.updateGame(gameID, game);
-                    notification.setMessage("Black has won the game");
+                    notification.setMessage("Black has won the game through checkmate");
+                    connections.broadcast(gameID, "", notification);
+                } else if (game.getGame().isInCheck(ChessGame.TeamColor.BLACK)){
+                    notification.setMessage("Black is in check");
+                    connections.broadcast(gameID, "", notification);
+                } else if (game.getGame().isInCheck(ChessGame.TeamColor.WHITE)) {
+                    notification.setMessage("White is in check");
                     connections.broadcast(gameID, "", notification);
                 }
                 var loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
@@ -193,7 +198,9 @@ public class WebSocketHandler {
                 connections.broadcast(gameID, "", loadGame);
             }
         } catch (Exception e) {
-            System.out.println(e);
+            var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            notification.setErrorMessage("Invalid move attempted");
+            session.getRemote().sendString(new Gson().toJson(notification));
         }
     }
 
