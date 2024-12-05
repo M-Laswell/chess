@@ -135,6 +135,7 @@ public class WebSocketHandler {
                     if(checkValidMove(game, ChessGame.TeamColor.WHITE, move)){
                         if(!game.getGame().isGameWon()) {
                             game.getGame().makeMove(move);
+
                             gameService.updateGame(gameID, game);
                             notification.setMessage("White Moved");
                             //session.getRemote().sendString(new Gson().toJson(notification));
@@ -170,6 +171,20 @@ public class WebSocketHandler {
                     session.getRemote().sendString(new Gson().toJson(error));
                 } else {
                     connections.broadcast(gameID, user.getUsername(),notification);
+                    if(game.getGame().isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                        game.getGame().setGameWon(true);
+                        game.getGame().setWinner(ChessGame.TeamColor.WHITE);
+                        gameService.updateGame(gameID, game);
+                        notification.setMessage("White has won the game");
+                        connections.broadcast(gameID, "", notification);
+                    }
+                    if(game.getGame().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                        game.getGame().setGameWon(true);
+                        game.getGame().setWinner(ChessGame.TeamColor.BLACK);
+                        gameService.updateGame(gameID, game);
+                        notification.setMessage("Black has won the game");
+                        connections.broadcast(gameID, "", notification);
+                    }
                     var loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
                     loadGame.setGame(game);
                     connections.broadcast(gameID, "", loadGame);
