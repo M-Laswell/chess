@@ -3,7 +3,6 @@ package ui;
 import chess.ChessGame;
 import model.AuthData;
 import model.GameData;
-import org.eclipse.jetty.server.Server;
 import websocket.NotificationHandler;
 import websocket.messages.ServerMessage;
 
