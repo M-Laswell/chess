@@ -35,10 +35,6 @@ public class Repl implements NotificationHandler {
         var result = "";
         while (!result.equals("quit")) {
             printPrompt();
-            if (state == State.INGAME || state == State.OBSERVING){
-                System.out.print(client.help());
-                printPrompt();
-            }
             String line = scanner.nextLine();
 
             try {

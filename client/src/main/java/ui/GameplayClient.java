@@ -1,8 +1,6 @@
 package ui;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessPiece;
+import chess.*;
 import exception.ResponseException;
 import model.GameData;
 import websocket.NotificationHandler;
@@ -42,7 +40,7 @@ public class GameplayClient implements Client{
             var tokens = command.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            if(repl.getState() == State.OBSERVING || chessGame.getGame().isGameWon()) {
+            if(repl.getState() == State.OBSERVING) {
                 return switch (cmd) {
                     case "help" -> help();
                     case "redraw", "r" -> printChessboard();
@@ -54,8 +52,8 @@ public class GameplayClient implements Client{
                 return switch (cmd) {
                     case "help" -> help();
                     case "redraw", "r" -> printChessboard();
-                    case "select", "s" -> help();
-                    case "move", "m" -> help();
+                    case "select", "s" -> select(params[0]);
+                    case "move", "m" -> makeMove(params[0], params[1]);
                     case "resign", "res" -> resign();
                     case "leave", "b" -> leave();
                     case "quit", "q" -> quit();
@@ -68,13 +66,10 @@ public class GameplayClient implements Client{
     }
     private String resign(){
         try {
-            chessGame.getGame().setGameWon(true);
             if (chessGame.getBlackUsername() != null && chessGame.getWhiteUsername() != null && chessGame.getBlackUsername().equals(repl.getAuthData().getUsername())) {
-                chessGame.getGame().setWinner(ChessGame.TeamColor.WHITE);
                 ws.resign(chessGame.getGameID(), repl.getAuthData().getAuthToken());
                 return "You have resigned";
             } else {
-                chessGame.getGame().setWinner(ChessGame.TeamColor.BLACK);
                 ws.resign(chessGame.getGameID(), repl.getAuthData().getAuthToken());
                 return "You have resigned";
             }
@@ -98,7 +93,7 @@ public class GameplayClient implements Client{
 
 
     private String generateChessboard(boolean flipBoard){
-        ChessPiece[][] board = this.tempBoard.getChessBoard();
+        ChessPiece[][] board = this.chessGame.getGame().getBoard().getChessBoard();
         StringBuilder stringBuilder = new StringBuilder();
         if(flipBoard) {
             for (int i = 0; i < board.length; i++) {
@@ -222,6 +217,47 @@ public class GameplayClient implements Client{
     private String backToMenu(){
         this.repl.changeState(State.SIGNEDIN);
         return "Welcome Back";
+    }
+
+    private String select(String selection){
+        try {
+            int row = ((int)selection.charAt(1));
+            int col = convertColToNumber(selection.charAt(0));
+        } catch (Exception e){
+            return "Invalid Command";
+        }
+        return "";
+    }
+
+    private Integer convertColToNumber(char letter){
+        return switch(letter) {
+            case 'A', 'a' -> 1;
+            case 'B', 'b' -> 2;
+            case 'C', 'c' -> 3;
+            case 'D', 'd' -> 4;
+            case 'E', 'e' -> 5;
+            case 'F', 'f' -> 6;
+            case 'G', 'g' -> 7;
+            case 'H', 'h' -> 8;
+            default -> throw new RuntimeException(" ");
+        };
+    }
+
+    private String makeMove(String startingPosition, String endingPosition){
+        try {
+            int startRow = (Character.getNumericValue(startingPosition.charAt(1)));
+            int startCol = convertColToNumber(startingPosition.charAt(0));
+            int endRow = (Character.getNumericValue(endingPosition.charAt(1)));
+            int endCol = convertColToNumber(endingPosition.charAt(0));
+            ChessPosition startPos = new ChessPosition(startRow, startCol);
+            ChessPosition endPos = new ChessPosition(endRow, endCol);
+            ChessMove move = new ChessMove(startPos, endPos, null);
+            ws.makeMove(chessGame.getGameID(), repl.getAuthData().getAuthToken(), move);
+
+        } catch (Exception e){
+            return "Invalid Command";
+        }
+        return "";
     }
 
     @Override

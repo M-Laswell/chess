@@ -77,9 +77,9 @@ public class WebSocketHandler {
                 connection.send(new Gson().toJson(loadGame));
                 String joinType = null;
                     if (game.getGameID() == gameID) {
-                        if (game.getBlackUsername().equals(user.getUsername())) {
+                        if (game.getBlackUsername() != null && game.getBlackUsername().equals(user.getUsername())) {
                             joinType = "black pieces";
-                        } else if (game.getWhiteUsername().equals(user.getUsername())) {
+                        } else if (game.getWhiteUsername() != null && game.getWhiteUsername().equals(user.getUsername())) {
                             joinType = "white pieces";
                         } else {
                             joinType = "an observer";
