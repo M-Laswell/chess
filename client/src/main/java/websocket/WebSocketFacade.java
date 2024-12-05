@@ -87,9 +87,9 @@ public class WebSocketFacade extends Endpoint {
     }
 
 
-    public void onClose(int statusCode, String reason) {
-        System.out.println("WebSocket closed: " + reason + " (Code: " + statusCode + ")");
-    }
+//    public void onClose(int statusCode, String reason) {
+//        System.out.println("WebSocket closed: " + reason + " (Code: " + statusCode + ")");
+//    }
 
 
 }

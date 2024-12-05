@@ -24,9 +24,9 @@ public class ConnectionManager {
         }
     }
 
-    public void removeGame(Integer gameID) {
-        connections.remove(gameID);
-    }
+//    public void removeGame(Integer gameID) {
+//        connections.remove(gameID);
+//    }
 
     public void removeUser(String userName, Integer gameID) {
         connections.get(gameID).removeIf(connection -> Objects.equals(connection.userName, userName));

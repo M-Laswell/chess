@@ -127,68 +127,70 @@ public class WebSocketHandler {
         user = checkForUser(user,session);
         boolean valid = false;
         try {
-            if (user != null) {
-                var connection = new Connection(user.getUsername(), gameID, session);
-                GameData game = checkForGame(gameID, session, user);
-                if (game != null) {
-                    var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                    if (user.getUsername().equals(game.getWhiteUsername()) && game.getGame().getTeamTurn().equals(ChessGame.TeamColor.WHITE)) {
-                        if (checkValidMove(game, ChessGame.TeamColor.WHITE, move)) {
-                            if (!game.getGame().isGameWon()) {
-                                game.getGame().makeMove(move);
-                                gameService.updateGame(gameID, game);
-                                notification.setMessage("White Moved");
-                                //session.getRemote().sendString(new Gson().toJson(notification));
-                                valid = true;
-                            } else {
-                                var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                                error.setErrorMessage("Game is already over");
-                                session.getRemote().sendString(new Gson().toJson(error));
-                                return;
-                            }
-                        }
-
-                    } else if (user.getUsername().equals(game.getBlackUsername()) && game.getGame().getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
-                        if (checkValidMove(game, ChessGame.TeamColor.BLACK, move)) {
-                            if (!game.getGame().isGameWon()) {
-                                game.getGame().makeMove(move);
-                                gameService.updateGame(gameID, game);
-                                notification.setMessage("Black Moved");
-                                //session.getRemote().sendString(new Gson().toJson(notification));
-                                valid = true;
-                            } else {
-                                var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                                error.setErrorMessage("Game is already over");
-                                session.getRemote().sendString(new Gson().toJson(error));
-                                return;
-                            }
-                        }
-                    }
-                    if (!valid) {
-                        var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                        error.setErrorMessage("Invalid Game Move");
-                        session.getRemote().sendString(new Gson().toJson(error));
+            if (user == null) {
+                return;
+            }
+            var connection = new Connection(user.getUsername(), gameID, session);
+            GameData game = checkForGame(gameID, session, user);
+            if (game == null) {
+                return;
+            }
+            var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+            if (user.getUsername().equals(game.getWhiteUsername()) && game.getGame().getTeamTurn().equals(ChessGame.TeamColor.WHITE)) {
+                if (checkValidMove(game, ChessGame.TeamColor.WHITE, move)) {
+                    if (!game.getGame().isGameWon()) {
+                        game.getGame().makeMove(move);
+                        gameService.updateGame(gameID, game);
+                        notification.setMessage("White Moved");
+                        //session.getRemote().sendString(new Gson().toJson(notification));
+                        valid = true;
                     } else {
-                        connections.broadcast(gameID, user.getUsername(), notification);
-                        if (game.getGame().isInCheckmate(ChessGame.TeamColor.BLACK)) {
-                            game.getGame().setGameWon(true);
-                            game.getGame().setWinner(ChessGame.TeamColor.WHITE);
-                            gameService.updateGame(gameID, game);
-                            notification.setMessage("White has won the game");
-                            connections.broadcast(gameID, "", notification);
-                        }
-                        if (game.getGame().isInCheckmate(ChessGame.TeamColor.WHITE)) {
-                            game.getGame().setGameWon(true);
-                            game.getGame().setWinner(ChessGame.TeamColor.BLACK);
-                            gameService.updateGame(gameID, game);
-                            notification.setMessage("Black has won the game");
-                            connections.broadcast(gameID, "", notification);
-                        }
-                        var loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-                        loadGame.setGame(game);
-                        connections.broadcast(gameID, "", loadGame);
+                        var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                        error.setErrorMessage("Game is already over");
+                        session.getRemote().sendString(new Gson().toJson(error));
+                        return;
                     }
                 }
+
+            } else if (user.getUsername().equals(game.getBlackUsername()) && game.getGame().getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
+                if (checkValidMove(game, ChessGame.TeamColor.BLACK, move)) {
+                    if (!game.getGame().isGameWon()) {
+                        game.getGame().makeMove(move);
+                        gameService.updateGame(gameID, game);
+                        notification.setMessage("Black Moved");
+                        //session.getRemote().sendString(new Gson().toJson(notification));
+                        valid = true;
+                    } else {
+                        var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                        error.setErrorMessage("Game is already over");
+                        session.getRemote().sendString(new Gson().toJson(error));
+                        return;
+                    }
+                }
+            }
+            if (!valid) {
+                var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                error.setErrorMessage("Invalid Game Move");
+                session.getRemote().sendString(new Gson().toJson(error));
+            } else {
+                connections.broadcast(gameID, user.getUsername(), notification);
+                if (game.getGame().isInCheckmate(ChessGame.TeamColor.BLACK)) {
+                    game.getGame().setGameWon(true);
+                    game.getGame().setWinner(ChessGame.TeamColor.WHITE);
+                    gameService.updateGame(gameID, game);
+                    notification.setMessage("White has won the game");
+                    connections.broadcast(gameID, "", notification);
+                }
+                if (game.getGame().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+                    game.getGame().setGameWon(true);
+                    game.getGame().setWinner(ChessGame.TeamColor.BLACK);
+                    gameService.updateGame(gameID, game);
+                    notification.setMessage("Black has won the game");
+                    connections.broadcast(gameID, "", notification);
+                }
+                var loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+                loadGame.setGame(game);
+                connections.broadcast(gameID, "", loadGame);
             }
         } catch (Exception e) {
             System.out.println(e);

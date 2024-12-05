@@ -67,7 +67,8 @@ public class GameplayClient implements Client{
     }
     private String resign(){
         try {
-            if (chessGame.getBlackUsername() != null && chessGame.getWhiteUsername() != null && chessGame.getBlackUsername().equals(repl.getAuthData().getUsername())) {
+            if (chessGame.getBlackUsername() != null && chessGame.getWhiteUsername() != null
+                    && chessGame.getBlackUsername().equals(repl.getAuthData().getUsername())) {
                 ws.resign(chessGame.getGameID(), repl.getAuthData().getAuthToken());
                 return "You have resigned";
             } else {
