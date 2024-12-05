@@ -102,6 +102,7 @@ public class WebSocketHandler {
             var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
             notification.setErrorMessage("You're Not Authorized For This Action");
             session.getRemote().sendString(new Gson().toJson(notification));
+
             return null;
         }
     }
@@ -151,7 +152,7 @@ public class WebSocketHandler {
                 }
                 if(!valid) {
                     var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
-                    notification.setErrorMessage("Invalid Game Move");
+                    error.setErrorMessage("Invalid Game Move");
                     session.getRemote().sendString(new Gson().toJson(error));
                 } else {
                     connections.broadcast(gameID, user.getUsername(),notification);

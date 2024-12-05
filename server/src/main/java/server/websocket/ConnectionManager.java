@@ -45,9 +45,5 @@ public class ConnectionManager {
                 }
         }
 
-        // Clean up any connections that were left open.
-        for (var c : removeList) {
-            connections.remove(c.gameID);
-        }
     }
 }
