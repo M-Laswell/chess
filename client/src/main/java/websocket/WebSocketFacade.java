@@ -3,8 +3,6 @@ package websocket;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 import websocket.NotificationHandler;
@@ -33,7 +31,6 @@ public class WebSocketFacade extends Endpoint {
             //set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
-                @OnWebSocketMessage
                 public void onMessage(String message) {
                     ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
                     notificationHandler.notify(notification);
@@ -89,7 +86,7 @@ public class WebSocketFacade extends Endpoint {
         }
     }
 
-    @OnWebSocketClose
+
     public void onClose(int statusCode, String reason) {
         System.out.println("WebSocket closed: " + reason + " (Code: " + statusCode + ")");
     }
