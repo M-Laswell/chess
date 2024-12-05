@@ -400,7 +400,7 @@ public class ChessPiece {
                 }
             }
         }
-        System.out.println(moves);
+        //System.out.println(moves);
         return moves;
     }
 

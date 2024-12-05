@@ -105,7 +105,7 @@ public class Repl implements NotificationHandler {
 
     private String loadGame(ServerMessage notification){
         this.gameplayClient.chessGame = notification.getGame();
-        return this.gameplayClient.printChessboard();
+        return this.gameplayClient.printChessboard(null);
     }
 
 }

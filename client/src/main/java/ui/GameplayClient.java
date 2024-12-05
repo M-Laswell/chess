@@ -10,12 +10,13 @@ import websocket.messages.ServerMessage;
 import static ui.EscapeSequences.*;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 public class GameplayClient implements Client{
     private final String serverUrl;
     private final Repl repl;
     public GameData chessGame;
-    private ChessBoard tempBoard = new ChessBoard();
+    //private ChessBoard tempBoard = new ChessBoard();
     private Boolean flipBoard = true;
     private WebSocketFacade ws;
 
@@ -43,7 +44,7 @@ public class GameplayClient implements Client{
             if(repl.getState() == State.OBSERVING) {
                 return switch (cmd) {
                     case "help" -> help();
-                    case "redraw", "r" -> printChessboard();
+                    case "redraw", "r" -> printChessboard(null);
                     case "leave", "b" -> leave();
                     case "quit", "q" -> quit();
                     default -> help();
@@ -51,7 +52,7 @@ public class GameplayClient implements Client{
             } else {
                 return switch (cmd) {
                     case "help" -> help();
-                    case "redraw", "r" -> printChessboard();
+                    case "redraw", "r" -> printChessboard(null);
                     case "select", "s" -> select(params[0]);
                     case "move", "m" -> makeMove(params[0], params[1]);
                     case "resign", "res" -> resign();
@@ -84,23 +85,29 @@ public class GameplayClient implements Client{
         return "quit";
     }
 
-    public String printChessboard() {
+    public String printChessboard(ChessPosition selected) {
         if(chessGame.getBlackUsername() != null && chessGame.getBlackUsername().equals(repl.getAuthData().getUsername())) {
-                return "In Game " + chessGame.getGameName() + "\n\n" + generateChessboard(flipBoard);
+                return "In Game " + chessGame.getGameName() + "\n\n" + generateChessboard(flipBoard, selected);
         }
-        return "In Game " + chessGame.getGameName() + "\n\n" + generateChessboard(!flipBoard);
+        return "In Game " + chessGame.getGameName() + "\n\n" + generateChessboard(!flipBoard, selected);
     }
 
 
-    private String generateChessboard(boolean flipBoard){
+    private String generateChessboard(boolean flipBoard, ChessPosition selected){
+        ChessGame game = chessGame.getGame().clone();
+        Collection<ChessMove> validMoves = null;
         ChessPiece[][] board = this.chessGame.getGame().getBoard().getChessBoard();
         StringBuilder stringBuilder = new StringBuilder();
+        if(selected != null){
+            validMoves = game.validMoves(selected);
+        }
         if(flipBoard) {
             for (int i = 0; i < board.length; i++) {
                 for (int j = board.length - 1; j >= 0; j--) {
                     String pieceRepresentation = EMPTY;
                     ChessPiece piece = board[i][j];
-                    this.setBackGroundColor(stringBuilder, i, j, board);
+                    this.setBackGroundColor(stringBuilder, i, j, board, validMoves, selected);
+
                     stringBuilder.append(SET_TEXT_COLOR_WHITE);
                     pieceRepresentation = setSpacing(pieceRepresentation, i, j, board);
                     pieceRepresentation = setPiece(stringBuilder, piece, pieceRepresentation);
@@ -114,7 +121,7 @@ public class GameplayClient implements Client{
                 for (int j = 0; j < board.length; j++) {
                     String pieceRepresentation = EMPTY;
                     ChessPiece piece = board[i][j];
-                    setBackGroundColor(stringBuilder, i, j, board);
+                    setBackGroundColor(stringBuilder, i, j, board, validMoves, selected);
                     stringBuilder.append(SET_TEXT_COLOR_WHITE);
                     pieceRepresentation = setSpacing(pieceRepresentation, i, j, board);
                     pieceRepresentation = setPiece(stringBuilder, piece, pieceRepresentation);
@@ -152,8 +159,14 @@ public class GameplayClient implements Client{
         };
     }
 
-    private StringBuilder setBackGroundColor(StringBuilder stringBuilder, int i, int j, ChessPiece[][] board){
-        if(j == 0 || j == board.length-1 || i == 0 || i == board.length-1){
+    private StringBuilder setBackGroundColor(StringBuilder stringBuilder, int i, int j, ChessPiece[][] board,
+                                             Collection<ChessMove> validMoves, ChessPosition selected) {
+        ChessMove move = new ChessMove(selected, new ChessPosition(i, j), null);
+        if (validMoves != null && validMoves.contains(move)) {
+            stringBuilder.append(SET_BG_COLOR_MAGENTA);
+        } else if (selected != null && selected.getColumn() == j && selected.getRow() == i) {
+            stringBuilder.append(SET_BG_COLOR_YELLOW);
+        } else if(j == 0 || j == board.length-1 || i == 0 || i == board.length-1){
             stringBuilder.append(SET_BG_COLOR_DARK_GREY);
         } else if (j % 2 == 1 && i % 2 == 0) {
             stringBuilder.append(SET_BG_COLOR_LIGHT_GREY);
@@ -162,6 +175,7 @@ public class GameplayClient implements Client{
         } else {
             stringBuilder.append(SET_BG_COLOR_DARK_GREEN);
         }
+
         return stringBuilder;
     }
 
@@ -211,7 +225,6 @@ public class GameplayClient implements Client{
 
     public void setChessGame(GameData chessGame) {
         this.chessGame = chessGame;
-        tempBoard.resetBoard();
     }
 
     private String backToMenu(){
@@ -221,12 +234,12 @@ public class GameplayClient implements Client{
 
     private String select(String selection){
         try {
-            int row = ((int)selection.charAt(1));
+            int row = Character.getNumericValue(selection.charAt(1));
             int col = convertColToNumber(selection.charAt(0));
+            return printChessboard(new ChessPosition(row,col));
         } catch (Exception e){
             return "Invalid Command";
         }
-        return "";
     }
 
     private Integer convertColToNumber(char letter){
