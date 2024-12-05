@@ -70,6 +70,10 @@ public class GameService {
         gameDAO.updateGame(gameID, game);
     }
 
+    public void updateGame (Integer gameID,GameData game ) throws DataAccessException {
+        gameDAO.updateGame(gameID, game);
+    }
+
     public void leaveGame(String token, Integer gameID) throws DataAccessException {
         AuthData user = authService.authenticate(token);
         GameData game = gameDAO.getGame(gameID);

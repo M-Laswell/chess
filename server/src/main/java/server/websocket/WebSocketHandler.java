@@ -2,6 +2,7 @@ package server.websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataaccess.DataAccessException;
@@ -120,17 +121,51 @@ public class WebSocketHandler {
         return null;
     }
 
-    public void makeMove(Integer gameID, ChessMove move, AuthData user, Session session) throws IOException, DataAccessException {
+    public void makeMove(Integer gameID, ChessMove move, AuthData user, Session session) throws IOException, DataAccessException, InvalidMoveException {
         user = checkForUser(user,session);
+        boolean valid = false;
         if(user != null) {
             var connection = new Connection(user.getUsername(), gameID, session);
             GameData game = checkForGame(gameID, session, user);
             if (game != null) {
-                if(game.getGame().getTeamTurn().equals(ChessGame.TeamColor.BLACK)){
+                var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                if(user.getUsername().equals(game.getWhiteUsername()) &&
+                        game.getGame().getTeamTurn().equals(ChessGame.TeamColor.WHITE)){
+                    if(checkValidMove(game, ChessGame.TeamColor.WHITE, move)){
+                        game.getGame().makeMove(move);
+                        gameService.updateGame(gameID, game);
+                        notification.setMessage("White Moved");
+                        //session.getRemote().sendString(new Gson().toJson(notification));
+                        valid = true;
+                    }
 
+                } else if (user.getUsername().equals(game.getBlackUsername()) &&
+                        game.getGame().getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
+                    if(checkValidMove(game, ChessGame.TeamColor.BLACK, move)){
+                        game.getGame().makeMove(move);
+                        gameService.updateGame(gameID, game);
+                        notification.setMessage("Black Moved");
+                        //session.getRemote().sendString(new Gson().toJson(notification));
+                        valid = true;
+                    }
+                }
+                if(!valid) {
+                    var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                    notification.setErrorMessage("Invalid Game Move");
+                    session.getRemote().sendString(new Gson().toJson(error));
+                } else {
+                    connections.broadcast(gameID, user.getUsername(),notification);
+                    var loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+                    loadGame.setGame(game);
+                    connections.broadcast(gameID, "", loadGame);
                 }
             }
         }
+    }
+
+    private Boolean checkValidMove(GameData game, ChessGame.TeamColor color, ChessMove move){
+        return (!game.getGame().isGameWon() && game.getGame().validMoves(move.getStartPosition()).contains(move));
+
     }
 
     private void leave(Integer gameID, AuthData user) throws IOException {
