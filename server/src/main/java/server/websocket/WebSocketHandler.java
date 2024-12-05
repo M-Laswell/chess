@@ -133,21 +133,35 @@ public class WebSocketHandler {
                 if(user.getUsername().equals(game.getWhiteUsername()) &&
                         game.getGame().getTeamTurn().equals(ChessGame.TeamColor.WHITE)){
                     if(checkValidMove(game, ChessGame.TeamColor.WHITE, move)){
-                        game.getGame().makeMove(move);
-                        gameService.updateGame(gameID, game);
-                        notification.setMessage("White Moved");
-                        //session.getRemote().sendString(new Gson().toJson(notification));
-                        valid = true;
+                        if(!game.getGame().isGameWon()) {
+                            game.getGame().makeMove(move);
+                            gameService.updateGame(gameID, game);
+                            notification.setMessage("White Moved");
+                            //session.getRemote().sendString(new Gson().toJson(notification));
+                            valid = true;
+                        } else {
+                            var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                            error.setErrorMessage("Game is already over");
+                            session.getRemote().sendString(new Gson().toJson(error));
+                            return;
+                        }
                     }
 
                 } else if (user.getUsername().equals(game.getBlackUsername()) &&
                         game.getGame().getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
                     if(checkValidMove(game, ChessGame.TeamColor.BLACK, move)){
-                        game.getGame().makeMove(move);
-                        gameService.updateGame(gameID, game);
-                        notification.setMessage("Black Moved");
-                        //session.getRemote().sendString(new Gson().toJson(notification));
-                        valid = true;
+                        if(!game.getGame().isGameWon()){
+                            game.getGame().makeMove(move);
+                            gameService.updateGame(gameID, game);
+                            notification.setMessage("Black Moved");
+                            //session.getRemote().sendString(new Gson().toJson(notification));
+                            valid = true;
+                        } else {
+                            var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                            error.setErrorMessage("Game is already over");
+                            session.getRemote().sendString(new Gson().toJson(error));
+                            return;
+                        }
                     }
                 }
                 if(!valid) {
@@ -165,7 +179,7 @@ public class WebSocketHandler {
     }
 
     private Boolean checkValidMove(GameData game, ChessGame.TeamColor color, ChessMove move){
-        return (!game.getGame().isGameWon() && game.getGame().validMoves(move.getStartPosition()).contains(move));
+        return (game.getGame().validMoves(move.getStartPosition()).contains(move));
 
     }
 
@@ -184,36 +198,46 @@ public class WebSocketHandler {
     //trust,autonomy,purpose,psychological safety key principles for building efficient productive organizations
 
     public void resign(Integer gameID, AuthData user, Session session) throws IOException, DataAccessException {
-        user = checkForUser(user,session);
+        user = checkForUser(user, session);
         boolean valid = false;
-        if(user != null) {
+        if (user != null) {
             var connection = new Connection(user.getUsername(), gameID, session);
             GameData game = checkForGame(gameID, session, user);
             if (game != null) {
                 var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-                if(user.getUsername().equals(game.getWhiteUsername()) &&
-                        game.getGame().getTeamTurn().equals(ChessGame.TeamColor.WHITE)){
+                if (user.getUsername().equals(game.getWhiteUsername())) {
+                    if (!game.getGame().isGameWon()) {
                         game.getGame().setWinner(ChessGame.TeamColor.BLACK);
                         valid = true;
+                    } else {
+                        var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                        error.setErrorMessage("Game is already over");
+                        session.getRemote().sendString(new Gson().toJson(error));
+                        return;
                     }
 
-                } else if (user.getUsername().equals(game.getBlackUsername()) &&
-                        game.getGame().getTeamTurn().equals(ChessGame.TeamColor.BLACK)) {
+                } else if (user.getUsername().equals(game.getBlackUsername())) {
+                    if (!game.getGame().isGameWon()) {
                         game.getGame().setWinner(ChessGame.TeamColor.WHITE);
                         valid = true;
-            }
-                if(valid){
+                    } else {
+                        var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+                        error.setErrorMessage("Game is already over");
+                        session.getRemote().sendString(new Gson().toJson(error));
+                        return;
+                    }
+                }
+                if (valid) {
                     game.getGame().setGameWon(true);
-                    gameService.updateGame(gameID,game);
-                    var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                    gameService.updateGame(gameID, game);
                     notification.setMessage(user.getUsername() + " has resigned");
-                    connections.broadcast(gameID,"", notification);
+                    connections.broadcast(gameID, "", notification);
                 } else {
                     var error = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
                     error.setErrorMessage("You Can't Resign Foolish Mortal");
                     session.getRemote().sendString(new Gson().toJson(error));
+                }
             }
         }
     }
-
 }
