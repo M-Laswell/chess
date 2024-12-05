@@ -4,6 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import dataaccess.DataAccessException;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -19,6 +20,7 @@ import websocket.messages.ServerMessage;
 
 import javax.management.Notification;
 import java.io.IOException;
+import java.net.Authenticator;
 import java.util.Timer;
 
 
@@ -46,7 +48,7 @@ public class WebSocketHandler {
 
             switch (command.getCommandType()) {
                 case CONNECT -> connect(userData, command.getGameID(), session);
-                case MAKE_MOVE -> makeMove(command.getGameID(), command.getChessMove());
+                case MAKE_MOVE -> makeMove(command.getGameID(), command.getChessMove(), userData, session);
                 case LEAVE -> leave(command.getGameID(), userData);
                 case RESIGN -> resign(command.getGameID(), userData);
             }
@@ -59,49 +61,75 @@ public class WebSocketHandler {
     @OnWebSocketError
     public void onError(Throwable error){
         System.out.println(error);
-        //notify();
     }
 
-    private void connect(AuthData user, Integer gameID, Session session) throws IOException {
+    private void connect(AuthData user, Integer gameID, Session session) throws IOException, DataAccessException {
         System.out.println("Connected: " + session);
-        try {
+        user = checkForUser(user,session);
+        if(user != null) {
             var connection = new Connection(user.getUsername(), gameID, session);
-            connections.add(connection);
-            var loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-            for(GameData game: gameService.getGames(user.getAuthToken())){
-                if(game.getGameID() == gameID){
-                    loadGame.setGame(game);
-                }
-            }
-            connection.send(new Gson().toJson(loadGame));;
-            var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            String joinType = null;
-            for (GameData game : gameService.getGames(user.getAuthToken())){
-                if(game.getGameID() == gameID){
-                    if(game.getBlackUsername().equals(user.getUsername())){
-                        joinType = "black pieces";
-                    } else if (game.getWhiteUsername().equals(user.getUsername())){
-                        joinType = "white pieces";
-                    } else {
-                        joinType = "an observer";
+            GameData game = checkForGame(gameID, session, user);
+            if (game != null) {
+                connections.add(connection);
+                var loadGame = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
+                loadGame.setGame(game);
+                connection.send(new Gson().toJson(loadGame));
+                String joinType = null;
+                    if (game.getGameID() == gameID) {
+                        if (game.getBlackUsername().equals(user.getUsername())) {
+                            joinType = "black pieces";
+                        } else if (game.getWhiteUsername().equals(user.getUsername())) {
+                            joinType = "white pieces";
+                        } else {
+                            joinType = "an observer";
+                        }
                     }
-                }
+                var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
+                notification.setMessage(user.getUsername() + " joined the game as " + joinType);
+                connections.broadcast(gameID, user.getUsername(), notification);
             }
-            notification.setMessage(user.getUsername() + " joined the game as " + joinType);
-            connections.broadcast(gameID, user.getUsername(), notification);
-
-        } catch (Exception e){
-            System.out.println(e);
         }
 
+
     }
 
-    public void makeMove(Integer gameID, ChessMove move) throws ResponseException {
+    private AuthData checkForUser(AuthData user, Session session) throws IOException {
         try {
-            var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            connections.broadcast(gameID, "", notification);
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+            AuthData userToCheck = authService.authenticate(user.getAuthToken());
+            return userToCheck;
+        } catch (Exception e){
+            var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+            notification.setErrorMessage("You're Not Authorized For This Action");
+            session.getRemote().sendString(new Gson().toJson(notification));
+            return null;
+        }
+    }
+
+    private GameData checkForGame(Integer gameID, Session session, AuthData user) throws DataAccessException, IOException {
+
+        for(GameData game: gameService.getGames(user.getAuthToken())){
+            if(game.getGameID() == gameID){
+
+                return game;
+            }
+        }
+
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR);
+        notification.setErrorMessage("Invalid Game ID");
+        session.getRemote().sendString(new Gson().toJson(notification));
+        return null;
+    }
+
+    public void makeMove(Integer gameID, ChessMove move, AuthData user, Session session) throws IOException, DataAccessException {
+        user = checkForUser(user,session);
+        if(user != null) {
+            var connection = new Connection(user.getUsername(), gameID, session);
+            GameData game = checkForGame(gameID, session, user);
+            if (game != null) {
+                if(game.getGame().getTeamTurn().equals(ChessGame.TeamColor.BLACK)){
+
+                }
+            }
         }
     }
 
@@ -117,10 +145,13 @@ public class WebSocketHandler {
         }
     }
 
+    //trust,autonomy,purpose,psychological safety key principles for building efficient productive organizations
+
     public void resign(Integer gameID, AuthData user) throws ResponseException {
         try {
             var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION);
-            connections.broadcast(gameID,"", notification);
+            notification.setMessage(user.getUsername() + " has resigned");
+            connections.broadcast(gameID,user.getUsername(), notification);
         } catch (Exception ex) {
             throw new ResponseException(500, ex.getMessage());
         }

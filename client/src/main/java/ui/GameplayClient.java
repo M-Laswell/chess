@@ -42,7 +42,7 @@ public class GameplayClient implements Client{
             var tokens = command.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            if(repl.getState() == State.OBSERVING) {
+            if(repl.getState() == State.OBSERVING || chessGame.getGame().isGameWon()) {
                 return switch (cmd) {
                     case "help" -> help();
                     case "redraw", "r" -> printChessboard();
